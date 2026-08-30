@@ -1,378 +1,197 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { GraduationCap, BookOpen, CheckCircle, Clock, Award, HelpCircle, ChevronRight, ChevronLeft, RefreshCw, CheckCircle2, XCircle, FileText, Check } from 'lucide-react';
+import { GraduationCap, BookOpen, CheckCircle, Clock, Award, HelpCircle, ChevronRight, ChevronLeft, RefreshCw, CheckCircle2, XCircle } from 'lucide-react';
 
-const MASTER_QUIZZES = {
+const DEFAULT_EDUCATION_MODULES = {
   Beginner: [
     {
-      id: 1,
-      question: "What does buying a share of a stock represent?",
-      options: [
-        "A loan to a company",
-        "Fractional equity ownership in a corporation",
-        "A government bond certificate",
-        "A fixed-rate saving deposit"
+      id: 'b1',
+      title: 'Stock Market Foundations & Equity Ownership',
+      category: 'Basics',
+      duration: '15 mins',
+      summary: 'Comprehensive guide on shares, stock exchanges, market vs limit orders, dividends, and equity ownership.',
+      content: [
+        "A stock (also known as equity) represents fractional ownership in a corporation. When you purchase a share of stock in a public company like Apple or Microsoft, you become a shareholder, giving you a legal claim to a proportion of the company's assets and future earnings.",
+        "Stock Exchanges & Orders: Stocks trade on centralized stock exchanges such as the New York Stock Exchange (NYSE) or NASDAQ. When buying or selling, investors use two primary order types: a Market Order (executes immediately at the current market price) and a Limit Order (executes only at a specified target price or better).",
+        "How Investors Earn Returns: Shareholders generate wealth through two main mechanisms: 1) Capital Gains (selling a stock at a higher price than what you paid), and 2) Dividend Payouts (quarterly cash distributions paid by profitable corporations to reward shareholders)."
       ],
-      correctIndex: 1,
-      explanation: "A share of stock represents true fractional ownership in the equity of a corporation."
+      quiz: [
+        {
+          question: "What does owning a share of stock in a corporation grant you?",
+          options: ["Fractional equity ownership and claim on earnings", "A guaranteed loan repayment from the bank", "Total legal control over company managers", "Immunity from market price drops"],
+          correctIndex: 0,
+          explanation: "A stock share represents fractional ownership of the company's equity and future earnings."
+        },
+        {
+          question: "What is the difference between a Market Order and a Limit Order?",
+          options: [
+            "Market Orders execute immediately at current price; Limit Orders execute at a target price or better",
+            "Limit Orders execute instantly; Market Orders take 3 days to process",
+            "Market Orders are only for buying bonds; Limit Orders are for buying cryptocurrency",
+            "There is no difference between them"
+          ],
+          correctIndex: 0,
+          explanation: "Market Orders execute right away at market prices, whereas Limit Orders specify an exact execution price constraint."
+        }
+      ]
     },
     {
-      id: 2,
-      question: "Which ETF tracks the 500 largest publicly traded companies in the U.S.?",
-      options: ["BND", "VOO", "GLD", "VNQ"],
-      correctIndex: 1,
-      explanation: "Vanguard S&P 500 ETF (VOO) tracks the 500 largest publicly traded American corporations."
-    },
-    {
-      id: 3,
-      question: "What is compound interest?",
-      options: [
-        "Interest calculated only on original principal",
-        "Interest earned on both principal and accumulated interest",
-        "A penalty fee paid to banks",
-        "A fixed monthly expense"
+      id: 'b2',
+      title: 'Index Funds, ETFs & Passive Wealth Building (VOO, BND)',
+      category: 'ETFs',
+      duration: '18 mins',
+      summary: 'Deep dive into Exchange-Traded Funds, broad-market index tracking, expense ratios, and asset diversification.',
+      content: [
+        "What is an ETF? An Exchange-Traded Fund (ETF) is an investment fund traded on stock exchanges, much like individual stocks. An ETF holds a diversified basket of assets—such as stocks, bonds, or commodities—and tracks an underlying benchmark index.",
+        "S&P 500 Index Funds (VOO): Vanguard S&P 500 ETF (VOO) holds shares in 500 of the largest, most established U.S. corporations across tech, healthcare, finance, and consumer sectors. Investing in VOO provides instant diversification, eliminating single-stock risk.",
+        "Fixed Income & Bond ETFs (BND): Vanguard Total Bond Market ETF (BND) holds thousands of U.S. government and investment-grade corporate bonds. Fixed income ETFs pay regular interest yields and exhibit significantly lower price volatility (6.02% annualized) than stock funds, preserving capital."
       ],
-      correctIndex: 1,
-      explanation: "Compound interest is interest earned on initial principal plus all previously accumulated interest."
+      quiz: [
+        {
+          question: "Why is buying an ETF like VOO generally safer than buying a single company stock?",
+          options: [
+            "It spreads risk across 500 top companies instead of relying on one firm's performance",
+            "The government guarantees VOO will never lose value",
+            "VOO pays 50% dividend yields every month",
+            "ETFs do not trade on stock exchanges"
+          ],
+          correctIndex: 0,
+          explanation: "Broad-market ETFs provide instant diversification across hundreds of companies, drastically reducing single-company default risk."
+        }
+      ]
     },
     {
-      id: 4,
-      question: "Which asset class is generally considered to have lower volatility than growth stocks?",
-      options: ["Cryptocurrency", "Penny stocks", "High-yield tech stocks", "Total Bond Market ETFs (BND)"],
-      correctIndex: 3,
-      explanation: "Fixed-income bond ETFs like BND provide capital preservation and much lower price volatility than equities."
-    },
-    {
-      id: 5,
-      question: "What is a dividend?",
-      options: [
-        "A share of company profits paid to shareholders",
-        "A loan fee charged by banks",
-        "A government tax penalty",
-        "The total price of a stock"
+      id: 'b3',
+      title: 'The Power of Exponential Compounding & Dollar-Cost Averaging',
+      category: 'Wealth Building',
+      duration: '14 mins',
+      summary: 'Master the mathematical principles of compound interest, long-term time horizons, and Dollar-Cost Averaging (DCA).',
+      content: [
+        "The Compound Interest Mechanics: Compound interest is interest earned not only on your initial investment principal but also on all accumulated interest from previous periods. Over long periods (20 to 30 years), exponential growth causes investment earnings to outweigh annual contributions.",
+        "Dollar-Cost Averaging (DCA): DCA is an investment strategy where an investor divides up the total amount to be invested into periodic purchases of a target asset (e.g. $500 every month) regardless of asset price.",
+        "Emergency Reserve Foundation: Before investing aggressively in equities, financial advisors recommend keeping 3 to 6 months of essential living expenses in a high-yield liquid savings account."
       ],
-      correctIndex: 0,
-      explanation: "Dividends are payments made by a corporation to its shareholders out of quarterly profits."
-    },
-    {
-      id: 6,
-      question: "What is the primary purpose of an emergency fund?",
-      options: [
-        "Buying speculative cryptocurrency",
-        "Covering 3-6 months of essential living expenses during unexpected events",
-        "Day trading options contracts",
-        "Paying annual corporate taxes"
-      ],
-      correctIndex: 1,
-      explanation: "An emergency fund protects financial stability by covering 3-6 months of living expenses during unforeseen events."
-    },
-    {
-      id: 7,
-      question: "What does 'liquidity' mean in investing?",
-      options: [
-        "How easily an asset can be converted into cash without significant loss of value",
-        "The total debt of a corporation",
-        "The annual inflation rate",
-        "The stock exchange trading volume"
-      ],
-      correctIndex: 0,
-      explanation: "Liquidity describes how quickly and easily an asset can be bought or sold for cash."
-    },
-    {
-      id: 8,
-      question: "What is an Exchange-Traded Fund (ETF)?",
-      options: [
-        "A single stock issued by a tech company",
-        "A basket of securities that trades on a stock exchange",
-        "A non-tradable savings bond",
-        "A private bank loan"
-      ],
-      correctIndex: 1,
-      explanation: "An ETF pools investor money into a diversified basket of stocks or bonds trading under one ticker."
-    },
-    {
-      id: 9,
-      question: "What is market capitalization (Market Cap)?",
-      options: [
-        "The total dollar value of a company's outstanding shares of stock",
-        "The total number of employees in a company",
-        "The price of one share of stock",
-        "The quarterly dividend yield"
-      ],
-      correctIndex: 0,
-      explanation: "Market Cap = (Total Outstanding Shares) × (Current Share Price)."
-    },
-    {
-      id: 10,
-      question: "Which strategy helps reduce the impact of short-term market volatility when investing regularly?",
-      options: [
-        "Market timing",
-        "Dollar-Cost Averaging (DCA)",
-        "Buying only at market peaks",
-        "Panic selling during downturns"
-      ],
-      correctIndex: 1,
-      explanation: "Dollar-Cost Averaging involves investing equal dollar amounts at regular intervals regardless of share price."
+      quiz: [
+        {
+          question: "How does Dollar-Cost Averaging (DCA) protect investors during market downturns?",
+          options: [
+            "By automatically purchasing more shares at lower prices when the market drops",
+            "By guaranteeing a fixed 10% annual return from the government",
+            "By selling all stocks as soon as prices drop 5%",
+            "By converting all cash into gold bars"
+          ],
+          correctIndex: 0,
+          explanation: "DCA invests fixed dollar amounts regularly, ensuring you buy more shares when prices are cheap and fewer when expensive."
+        }
+      ]
     }
   ],
   Intermediate: [
     {
-      id: 1,
-      question: "What does a Golden Cross technical indicator signal?",
-      options: [
-        "A short-term moving average crossing above a long-term moving average (Bullish)",
-        "A company declaring bankruptcy",
-        "Stock price dropping below zero",
-        "A short-term moving average crossing below a long-term moving average (Bearish)"
+      id: 'i1',
+      title: 'Modern Portfolio Theory, Risk Profiles & Rebalancing',
+      category: 'Portfolio Management',
+      duration: '20 mins',
+      summary: 'Learn asset allocation strategies, target risk tolerance profiles (Low, Medium, High), and systematic portfolio rebalancing.',
+      content: [
+        "Modern Portfolio Theory (MPT): Pioneered by Nobel laureate Harry Markowitz, MPT demonstrates that an asset's risk and return should not be assessed alone, but by how it contributes to an overall portfolio's risk and return profile.",
+        "Risk Profiles & Asset Allocation: Portfolios are tailored to investor risk tolerance: Low Risk (70% BND / 30% VOO), Medium Risk (60% VOO / 20% AAPL / 20% BND), and High Risk (80% Tech / 20% AI).",
+        "Systematic Rebalancing: Periodically selling a portion of overperforming assets and buying underperforming assets to restore original target risk weightings."
       ],
-      correctIndex: 0,
-      explanation: "A Golden Cross (e.g. SMA_20 crossing above SMA_50) signals strong upward bullish price momentum."
-    },
-    {
-      id: 2,
-      question: "What does a Price-to-Earnings (P/E) ratio measure?",
-      options: [
-        "A company's dividend payout frequency",
-        "The ratio of a stock price to its earnings per share (EPS)",
-        "The total revenue minus expenses",
-        "The annual volatility percentage"
-      ],
-      correctIndex: 1,
-      explanation: "P/E ratio compares market price per share to annual earnings per share."
-    },
-    {
-      id: 3,
-      question: "What is asset allocation?",
-      options: [
-        "Investing 100% of capital into a single stock",
-        "Dividing an investment portfolio among different asset categories (Stocks, Bonds, Cash)",
-        "Borrowing money to buy options",
-        "Selling assets to pay taxes"
-      ],
-      correctIndex: 1,
-      explanation: "Asset allocation balances portfolio risk and return by spreading capital across diverse asset classes."
-    },
-    {
-      id: 4,
-      question: "If interest rates rise, what typically happens to bond prices?",
-      options: ["Bond prices rise", "Bond prices fall", "Bond prices remain unaffected", "Bond yields drop to zero"],
-      correctIndex: 1,
-      explanation: "Bond prices and interest rates have an inverse relationship; when interest rates rise, bond prices fall."
-    },
-    {
-      id: 5,
-      question: "What is a Simple Moving Average (SMA_20)?",
-      options: [
-        "The average closing price of a stock over the past 20 trading days",
-        "The maximum price of a stock in 20 years",
-        "The dividend yield divided by 20",
-        "The total volume traded in 20 hours"
-      ],
-      correctIndex: 0,
-      explanation: "SMA_20 calculates the unweighted mean of closing prices over the prior 20 trading periods."
-    },
-    {
-      id: 6,
-      question: "What is Modern Portfolio Theory (MPT)?",
-      options: [
-        "A theory stating investors should pick individual penny stocks",
-        "A framework for constructing a portfolio to maximize expected return for a given level of risk",
-        "A strategy of holding cash only",
-        "A rule to buy stocks only on Mondays"
-      ],
-      correctIndex: 1,
-      explanation: "Developed by Harry Markowitz, MPT optimizes portfolios along an Efficient Frontier based on mean-variance analysis."
-    },
-    {
-      id: 7,
-      question: "What does a beta greater than 1.0 indicate for a stock?",
-      options: [
-        "The stock is less volatile than the overall market",
-        "The stock is more volatile than the overall market",
-        "The stock pays zero dividends",
-        "The stock has negative earnings"
-      ],
-      correctIndex: 1,
-      explanation: "Beta > 1.0 means the stock experiences wider price swings than the benchmark market index."
-    },
-    {
-      id: 8,
-      question: "What is the difference between growth stocks and value stocks?",
-      options: [
-        "Growth stocks trade at higher valuations expecting fast revenue growth; Value stocks trade below intrinsic value",
-        "Growth stocks pay higher dividends than value stocks",
-        "Value stocks are always tech companies",
-        "Growth stocks have no stock price"
-      ],
-      correctIndex: 0,
-      explanation: "Growth stocks reinvest earnings for expansion, while Value stocks trade at discount multiples relative to fundamentals."
-    },
-    {
-      id: 9,
-      question: "What is rebalancing a portfolio?",
-      options: [
-        "Realigning the weightings of a portfolio's assets by periodically buying or selling assets to maintain target risk allocation",
-        "Closing all bank accounts",
-        "Buying only cryptocurrency",
-        "Switching brokers every month"
-      ],
-      correctIndex: 0,
-      explanation: "Rebalancing restores portfolio allocations to your target risk profile when market moves shift weightings."
-    },
-    {
-      id: 10,
-      question: "What does an inverted yield curve historically signal?",
-      options: [
-        "Strong economic acceleration",
-        "Potential impending economic recession",
-        "Record low stock market volatility",
-        "Immediate inflation drop to zero"
-      ],
-      correctIndex: 1,
-      explanation: "An inverted yield curve (short-term yields exceeding long-term yields) has preceded nearly every U.S. recession."
+      quiz: [
+        {
+          question: "What is the primary objective of systematic portfolio rebalancing?",
+          options: [
+            "To restore the portfolio back to its target risk and asset allocation weightings",
+            "To double the number of stock trades every day",
+            "To avoid paying capital gains taxes permanently",
+            "To convert all equity holdings into corporate bonds"
+          ],
+          correctIndex: 0,
+          explanation: "Rebalancing prevents your portfolio from becoming overly risky when certain equities outgrow their target allocation percentage."
+        }
+      ]
     }
   ],
   Advanced: [
     {
-      id: 1,
-      question: "In FinGuide AI's XGBoost forecaster, how is Model Accuracy calculated?",
-      options: [
-        "Random guessing",
-        "(1 - MAPE) * 100 on unseen out-of-sample test data",
-        "Checking past 1-day change only",
-        "Highest historical price point"
+      id: 'a1',
+      title: 'Quantitative AI & XGBoost Regressor Price Forecasting',
+      category: 'Quantitative AI',
+      duration: '25 mins',
+      summary: 'Deep dive into decision-tree gradient boosting, temporal lag features, and out-of-sample MAPE evaluation.',
+      content: [
+        "XGBoost Architecture: Extreme Gradient Boosting (XGBoost) builds an ensemble of shallow decision trees sequentially, where each new tree corrects errors made by previous trees.",
+        "Feature Engineering in Financial Time Series: FinGuide AI feeds technical indicators into XGBoost, including 20-day Simple Moving Average (SMA_20), annualized volatility, price slopes, and lag features (Close_{t-1}).",
+        "Model Accuracy Evaluation: Evaluated on unseen 20% test data using Mean Absolute Percentage Error (MAPE). Model Accuracy = (1 - MAPE) * 100."
       ],
-      correctIndex: 1,
-      explanation: "Model Accuracy = (1 - Mean Absolute Percentage Error) * 100 evaluated on unseen 20% test data."
-    },
-    {
-      id: 2,
-      question: "What does the Sharpe Ratio evaluate?",
-      options: [
-        "Total annual revenue growth",
-        "Risk-adjusted return relative to risk-free treasury rate per unit of volatility",
-        "Maximum leverage ratio of a hedge fund",
-        "Dividend yield percentage minus taxes"
-      ],
-      correctIndex: 1,
-      explanation: "Sharpe Ratio = (Portfolio Return - Risk-Free Rate) / Annualized Volatility."
-    },
-    {
-      id: 3,
-      question: "How is 5-year annualized volatility calculated for daily stock data?",
-      options: [
-        "Standard deviation of daily log returns multiplied by the square root of 252 trading days",
-        "Simple average of stock prices divided by 5",
-        "Maximum daily price minus minimum daily price",
-        "Total trading volume over 5 years"
-      ],
-      correctIndex: 0,
-      explanation: "Annualized Volatility = StdDev(Daily Returns) × √252."
-    },
-    {
-      id: 4,
-      question: "In gradient boosting algorithms like XGBoost, what role do decision trees play?",
-      options: [
-        "They act as weak learners combined sequentially to minimize gradient loss functions",
-        "They store user passwords",
-        "They calculate real-time bank interest",
-        "They randomly delete features"
-      ],
-      correctIndex: 0,
-      explanation: "XGBoost builds ensembles of shallow decision trees sequentially to minimize regularized objective loss."
-    },
-    {
-      id: 5,
-      question: "What is Maximum Drawdown (MDD)?",
-      options: [
-        "The maximum observed loss from a peak to a trough of a portfolio before a new peak is attained",
-        "The maximum dividend paid in a year",
-        "The highest price ever reached by a stock",
-        "The total cash deposited into a broker"
-      ],
-      correctIndex: 0,
-      explanation: "MDD measures peak-to-trough decline during a specific record period, assessing downside risk."
-    },
-    {
-      id: 6,
-      question: "What is the key advantage of using lag features (Close_{t-1}, SMA_20) in time-series forecasting models?",
-      options: [
-        "They capture temporal momentum and autocorrelation patterns",
-        "They guarantee 100% future price predictions",
-        "They remove the need for GPUs",
-        "They convert stocks into bonds"
-      ],
-      correctIndex: 0,
-      explanation: "Lagged historical price inputs allow decision trees to capture momentum, mean-reversion, and autocorrelation."
-    },
-    {
-      id: 7,
-      question: "What is Delta in options trading?",
-      options: [
-        "The rate of change of an option's price per $1 move in the underlying asset",
-        "The time remaining until expiration",
-        "The volatility of the option",
-        "The risk-free interest rate"
-      ],
-      correctIndex: 0,
-      explanation: "Delta measures price sensitivity of an option relative to a $1 change in the underlying stock."
-    },
-    {
-      id: 8,
-      question: "What is the Value at Risk (VaR) metric?",
-      options: [
-        "The statistical estimate of maximum expected loss over a specific time horizon at a given confidence level (e.g. 95%)",
-        "The total market cap of S&P 500",
-        "The minimum profit guaranteed by a broker",
-        "The average dividend yield of tech stocks"
-      ],
-      correctIndex: 0,
-      explanation: "VaR quantifies financial risk exposure by calculating maximum expected loss under normal market conditions."
-    },
-    {
-      id: 9,
-      question: "What is the main objective of a Delta-Neutral hedging strategy?",
-      options: [
-        "To create a portfolio immune to small price movements in the underlying asset by balancing positive and negative deltas",
-        "To maximize directional long exposure",
-        "To double the portfolio volatility",
-        "To eliminate all corporate taxes"
-      ],
-      correctIndex: 0,
-      explanation: "Delta-neutral portfolios balance long and short delta exposures so total portfolio delta sums to zero."
-    },
-    {
-      id: 10,
-      question: "How does Federal Reserve Quantitative Tightening (QT) affect market liquidity?",
-      options: [
-        "It contracts the central bank balance sheet, removing liquidity from financial markets",
-        "It increases cash supply in commercial bank vaults",
-        "It lowers federal funds rates to zero percent",
-        "It guarantees stock indices will reach record highs"
-      ],
-      correctIndex: 1,
-      explanation: "QT reduces central bank bond holdings, pulling money reserves out of financial institutions and contracting market liquidity."
+      quiz: [
+        {
+          question: "In FinGuide AI's XGBoost forecaster, how is out-of-sample Model Accuracy calculated?",
+          options: [
+            "(1 - MAPE) * 100 evaluated on unseen 20% test data",
+            "Checking past 1-day change only",
+            "Random guessing against the S&P 500",
+            "Highest historical stock price point"
+          ],
+          correctIndex: 0,
+          explanation: "Model Accuracy = (1 - Mean Absolute Percentage Error) * 100 evaluated strictly on unseen out-of-sample testing data."
+        }
+      ]
     }
   ]
 };
 
-export const Education = () => {
-  const [modules, setModules] = useState({ Beginner: [], Intermediate: [], Advanced: [] });
-  const [activeTab, setActiveTab] = useState('Beginner');
-  const [selectedModule, setSelectedModule] = useState(null);
-  
-  // Module-specific quiz answers state
-  const [moduleAnswers, setModuleAnswers] = useState({});
-  const [moduleScores, setModuleScores] = useState({});
+const MASTER_QUIZZES = {
+  Beginner: [
+    { id: 1, question: "What does buying a share of a stock represent?", options: ["A loan to a company", "Fractional equity ownership in a corporation", "A government bond certificate", "A fixed-rate saving deposit"], correctIndex: 1, explanation: "A share of stock represents true fractional ownership in equity." },
+    { id: 2, question: "Which ETF tracks the 500 largest publicly traded companies in the U.S.?", options: ["BND", "VOO", "GLD", "VNQ"], correctIndex: 1, explanation: "Vanguard S&P 500 ETF (VOO) tracks the 500 largest publicly traded American corporations." },
+    { id: 3, question: "What is compound interest?", options: ["Interest calculated only on principal", "Interest earned on both principal and accumulated interest", "A penalty fee", "A fixed expense"], correctIndex: 1, explanation: "Interest earned on principal plus all previously accumulated interest." },
+    { id: 4, question: "Which asset class is generally considered to have lower volatility than growth stocks?", options: ["Cryptocurrency", "Penny stocks", "High-yield tech stocks", "Total Bond Market ETFs (BND)"], correctIndex: 3, explanation: "BND provides capital preservation and low volatility." },
+    { id: 5, question: "What is a dividend?", options: ["A share of company profits paid to shareholders", "A loan fee", "A tax penalty", "The total price of a stock"], correctIndex: 0, explanation: "Quarterly cash distributions paid by profitable corporations to shareholders." },
+    { id: 6, question: "What is the primary purpose of an emergency fund?", options: ["Buying cryptocurrency", "Covering 3-6 months of essential living expenses", "Day trading options", "Paying corporate taxes"], correctIndex: 1, explanation: "Covers 3-6 months of living expenses during unforeseen events." },
+    { id: 7, question: "What does 'liquidity' mean in investing?", options: ["How easily an asset can be converted into cash", "The total debt of a corporation", "The annual inflation rate", "The trading volume"], correctIndex: 0, explanation: "How quickly an asset can be bought or sold for cash." },
+    { id: 8, question: "What is an Exchange-Traded Fund (ETF)?", options: ["A single stock", "A basket of securities trading on an exchange", "A non-tradable savings bond", "A private bank loan"], correctIndex: 1, explanation: "Pools investor money into a basket of stocks or bonds." },
+    { id: 9, question: "What is market capitalization (Market Cap)?", options: ["Total dollar value of a company's outstanding shares", "Total number of employees", "Price of one share", "Quarterly dividend yield"], correctIndex: 0, explanation: "Market Cap = (Outstanding Shares) × (Share Price)." },
+    { id: 10, question: "Which strategy helps reduce the impact of short-term market volatility when investing regularly?", options: ["Market timing", "Dollar-Cost Averaging (DCA)", "Buying at peaks", "Panic selling"], correctIndex: 1, explanation: "Investing equal dollar amounts at regular intervals regardless of share price." }
+  ],
+  Intermediate: [
+    { id: 1, question: "What does a Golden Cross technical indicator signal?", options: ["Short-term moving average crossing above long-term moving average (Bullish)", "Bankruptcy", "Stock price zero", "Bearish crossover"], correctIndex: 0, explanation: "SMA_20 crossing above SMA_50 signals bullish upward price momentum." },
+    { id: 2, question: "What does a Price-to-Earnings (P/E) ratio measure?", options: ["Dividend frequency", "Ratio of stock price to earnings per share (EPS)", "Revenue minus expenses", "Annual volatility"], correctIndex: 1, explanation: "Compares market price per share to annual earnings per share." },
+    { id: 3, question: "What is asset allocation?", options: ["Investing 100% into one stock", "Dividing portfolio among asset categories (Stocks, Bonds, Cash)", "Borrowing for options", "Selling assets for tax"], correctIndex: 1, explanation: "Balances portfolio risk and return across asset classes." },
+    { id: 4, question: "If interest rates rise, what typically happens to bond prices?", options: ["Bond prices rise", "Bond prices fall", "Bond prices remain unaffected", "Bond yields drop to zero"], correctIndex: 1, explanation: "Bond prices and interest rates move in opposite directions." },
+    { id: 5, question: "What is a Simple Moving Average (SMA_20)?", options: ["Average closing price over past 20 trading days", "Maximum price in 20 years", "Dividend yield / 20", "Volume in 20 hours"], correctIndex: 0, explanation: "Unweighted mean of closing prices over 20 trading periods." },
+    { id: 6, question: "What is Modern Portfolio Theory (MPT)?", options: ["Penny stock strategy", "Framework to maximize return for a given risk level", "Holding cash only", "Buying on Mondays"], correctIndex: 1, explanation: "Optimizes portfolio return relative to variance risk." },
+    { id: 7, question: "What does a beta greater than 1.0 indicate for a stock?", options: ["Less volatile than market", "More volatile than overall market", "Zero dividends", "Negative earnings"], correctIndex: 1, explanation: "Beta > 1.0 means wider price swings than the benchmark market index." },
+    { id: 8, question: "What is the difference between growth stocks and value stocks?", options: ["Growth = higher valuations/fast growth; Value = below intrinsic value", "Growth pays higher dividends", "Value stocks are tech only", "Growth has no price"], correctIndex: 0, explanation: "Growth reinvests for expansion; Value trades at a discount fundamental multiple." },
+    { id: 9, question: "What is rebalancing a portfolio?", options: ["Realigning asset weightings back to target risk allocation", "Closing bank accounts", "Crypto buying", "Switching brokers"], correctIndex: 0, explanation: "Restores target risk profile when market moves shift allocations." },
+    { id: 10, question: "What does an inverted yield curve historically signal?", options: ["Economic acceleration", "Potential impending economic recession", "Low volatility", "Zero inflation"], correctIndex: 1, explanation: "Inverted yield curve has preceded nearly every U.S. recession." }
+  ],
+  Advanced: [
+    { id: 1, question: "In FinGuide AI's XGBoost forecaster, how is Model Accuracy calculated?", options: ["Random guessing", "(1 - MAPE) * 100 on unseen out-of-sample test data", "Past 1-day change", "Highest price point"], correctIndex: 1, explanation: "Accuracy = (1 - MAPE) * 100 evaluated on unseen test data." },
+    { id: 2, question: "What does the Sharpe Ratio evaluate?", options: ["Revenue growth", "Risk-adjusted return relative to risk-free rate per unit of volatility", "Hedge fund leverage", "Dividend yield"], correctIndex: 1, explanation: "Sharpe = (Portfolio Return - Risk-Free Rate) / Annualized Volatility." },
+    { id: 3, question: "How is 5-year annualized volatility calculated for daily stock data?", options: ["Standard deviation of daily log returns multiplied by sqrt(252)", "Price divided by 5", "Max minus Min price", "Total volume"], correctIndex: 0, explanation: "Annualized Volatility = StdDev(Daily Returns) × √252." },
+    { id: 4, question: "In gradient boosting algorithms like XGBoost, what role do decision trees play?", options: ["Weak learners combined sequentially to minimize gradient loss", "Password storage", "Interest calculation", "Deleting features"], correctIndex: 0, explanation: "Builds decision tree ensembles sequentially to minimize objective loss." },
+    { id: 5, question: "What is Maximum Drawdown (MDD)?", options: ["Maximum observed peak-to-trough loss before a new peak", "Maximum annual dividend", "Highest price reached", "Total cash deposited"], correctIndex: 0, explanation: "Measures peak-to-trough decline during a record period." },
+    { id: 6, question: "What is the key advantage of using lag features (Close_{t-1}, SMA_20) in time-series forecasting?", options: ["Capturing temporal momentum and autocorrelation patterns", "Guaranteeing 100% predictions", "Removing GPUs", "Converting to bonds"], correctIndex: 0, explanation: "Allows models to capture momentum and autocorrelation." },
+    { id: 7, question: "What is Delta in options trading?", options: ["Rate of change of option price per $1 move in underlying asset", "Expiration time", "Volatility", "Risk-free rate"], correctIndex: 0, explanation: "Option price sensitivity relative to $1 stock move." },
+    { id: 8, question: "What is the Value at Risk (VaR) metric?", options: ["Statistical estimate of max expected loss over time horizon at confidence level (95%)", "Market cap of S&P 500", "Minimum broker profit", "Average tech yield"], correctIndex: 0, explanation: "Quantifies max expected loss under normal market conditions." },
+    { id: 9, question: "What is the main objective of a Delta-Neutral hedging strategy?", options: ["Portfolio immune to small price moves by balancing deltas", "Maximize long exposure", "Double volatility", "Eliminate tax"], correctIndex: 0, explanation: "Balances long and short deltas so net delta is zero." },
+    { id: 10, question: "How does Federal Reserve Quantitative Tightening (QT) affect market liquidity?", options: ["Increases bank cash", "Contracts central bank balance sheet, removing market liquidity", "Lowers interest rates to zero", "Guarantees index gains"], correctIndex: 1, explanation: "Contracts central bank balance sheet, reducing market reserves." }
+  ]
+};
 
-  // View Mode: 'read' (Module Lessons + Lesson Quiz) vs 'test' (Master 10-Question Exam)
+export const Education = () => {
+  const [modules, setModules] = useState(DEFAULT_EDUCATION_MODULES);
+  const [activeTab, setActiveTab] = useState('Beginner');
+  const [selectedModule, setSelectedModule] = useState(DEFAULT_EDUCATION_MODULES.Beginner[0]);
+  
+  const [moduleAnswers, setModuleAnswers] = useState({});
   const [viewMode, setViewMode] = useState('read');
 
-  // Master Test State (10 Questions per level)
   const [quizIndex, setQuizIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState({});
   const [quizFinished, setQuizFinished] = useState(false);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchModules();
@@ -380,28 +199,25 @@ export const Education = () => {
 
   const fetchModules = async () => {
     try {
-      setLoading(true);
       const res = await axios.get('/api/education/modules');
-      setModules(res.data);
-      if (res.data.Beginner && res.data.Beginner.length > 0) {
-        setSelectedModule(res.data.Beginner[0]);
+      if (res.data && res.data.Beginner) {
+        setModules(res.data);
+        if (res.data.Beginner.length > 0) setSelectedModule(res.data.Beginner[0]);
       }
     } catch (err) {
-      console.error('Failed to load education modules:', err);
-    } finally {
-      setLoading(false);
+      console.warn('Using default education dataset:', err);
     }
   };
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
     setModuleAnswers({});
-    setModuleScores({});
     setQuizIndex(0);
     setUserAnswers({});
     setQuizFinished(false);
-    if (modules[tab] && modules[tab].length > 0) {
-      setSelectedModule(modules[tab][0]);
+    const tabList = modules[tab] || DEFAULT_EDUCATION_MODULES[tab] || [];
+    if (tabList.length > 0) {
+      setSelectedModule(tabList[0]);
     }
   };
 
@@ -409,7 +225,7 @@ export const Education = () => {
     setModuleAnswers(prev => ({ ...prev, [qIdx]: optIdx }));
   };
 
-  const currentMasterQuizList = MASTER_QUIZZES[activeTab] || [];
+  const currentMasterQuizList = MASTER_QUIZZES[activeTab] || MASTER_QUIZZES.Beginner;
   const currentQuestion = currentMasterQuizList[quizIndex] || currentMasterQuizList[0];
 
   const handleOptionSelect = (optionIdx) => {
@@ -440,12 +256,12 @@ export const Education = () => {
   const calculateTotalScore = () => {
     let score = 0;
     currentMasterQuizList.forEach((q, idx) => {
-      if (userAnswers[idx] === q.correctIndex) {
-        score += 1;
-      }
+      if (userAnswers[idx] === q.correctIndex) score += 1;
     });
     return score;
   };
+
+  const currentModuleList = modules[activeTab] || DEFAULT_EDUCATION_MODULES[activeTab] || [];
 
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 20px' }}>
@@ -491,16 +307,12 @@ export const Education = () => {
         ))}
       </div>
 
-      {/* Mode Switcher: Reading Modules vs 10-Question Master Test */}
+      {/* Mode Switcher */}
       <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '36px' }}>
         <button
           onClick={() => setViewMode('read')}
           style={{
-            padding: '10px 22px',
-            borderRadius: '20px',
-            fontSize: '13px',
-            fontWeight: '700',
-            border: '1px solid',
+            padding: '10px 22px', borderRadius: '20px', fontSize: '13px', fontWeight: '700', border: '1px solid',
             borderColor: viewMode === 'read' ? '#2563eb' : '#cbd5e1',
             background: viewMode === 'read' ? '#dbeafe' : '#ffffff',
             color: viewMode === 'read' ? '#1e40af' : '#475569',
@@ -513,11 +325,7 @@ export const Education = () => {
         <button
           onClick={() => setViewMode('test')}
           style={{
-            padding: '10px 22px',
-            borderRadius: '20px',
-            fontSize: '13px',
-            fontWeight: '700',
-            border: '1px solid',
+            padding: '10px 22px', borderRadius: '20px', fontSize: '13px', fontWeight: '700', border: '1px solid',
             borderColor: viewMode === 'test' ? '#7c3aed' : '#cbd5e1',
             background: viewMode === 'test' ? '#f3e8ff' : '#ffffff',
             color: viewMode === 'test' ? '#6b21a8' : '#475569',
@@ -529,15 +337,14 @@ export const Education = () => {
       </div>
 
       {viewMode === 'read' ? (
-        /* Reading & Lesson Quiz View */
         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(320px, 1fr) minmax(400px, 1.8fr)', gap: '28px', marginBottom: '40px' }}>
-          {/* Left Column: Lesson Modules List */}
+          {/* Left Column: Lesson List */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <BookOpen size={18} color="#2563eb" /> {activeTab} Reading Curriculum
             </h3>
 
-            {modules[activeTab]?.map((item) => {
+            {currentModuleList.map((item) => {
               const isSelected = selectedModule?.id === item.id;
               return (
                 <div
@@ -571,7 +378,6 @@ export const Education = () => {
           <div>
             {selectedModule ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                {/* Reading Card */}
                 <div className="glass-panel" style={{ padding: '32px', background: '#ffffff' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#2563eb', fontWeight: '700', fontSize: '13px', marginBottom: '12px' }}>
                     <Award size={16} /> {activeTab} Level Lesson
@@ -580,7 +386,6 @@ export const Education = () => {
                     {selectedModule.title}
                   </h2>
 
-                  {/* Multi-Paragraph Lesson Content */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     {Array.isArray(selectedModule.content) ? (
                       selectedModule.content.map((pText, pIdx) => (
@@ -596,7 +401,6 @@ export const Education = () => {
                   </div>
                 </div>
 
-                {/* Lesson-Based Practice Questions */}
                 {selectedModule.quiz && selectedModule.quiz.length > 0 && (
                   <div className="glass-panel" style={{ padding: '32px', background: '#ffffff' }}>
                     <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '18px' }}>
@@ -621,11 +425,7 @@ export const Education = () => {
                                   key={optIdx}
                                   onClick={() => handleModuleQuizSelect(qIdx, optIdx)}
                                   style={{
-                                    textAlign: 'left',
-                                    padding: '12px 16px',
-                                    borderRadius: '8px',
-                                    fontSize: '13px',
-                                    fontWeight: '600',
+                                    textAlign: 'left', padding: '12px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: '600',
                                     border: '1px solid',
                                     borderColor: selectedOpt === optIdx ? '#2563eb' : '#cbd5e1',
                                     background: selectedOpt === optIdx ? '#dbeafe' : '#ffffff',
@@ -695,11 +495,7 @@ export const Education = () => {
                       key={optIdx}
                       onClick={() => handleOptionSelect(optIdx)}
                       style={{
-                        textAlign: 'left',
-                        padding: '14px 18px',
-                        borderRadius: '10px',
-                        fontSize: '14px',
-                        fontWeight: '600',
+                        textAlign: 'left', padding: '14px 18px', borderRadius: '10px', fontSize: '14px', fontWeight: '600',
                         border: '1px solid',
                         borderColor: isSelected ? '#7c3aed' : '#cbd5e1',
                         background: isSelected ? '#f3e8ff' : '#ffffff',
@@ -724,12 +520,7 @@ export const Education = () => {
               )}
 
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <button
-                  onClick={handlePrevQuestion}
-                  disabled={quizIndex === 0}
-                  className="btn-secondary"
-                  style={{ opacity: quizIndex === 0 ? 0.5 : 1, cursor: quizIndex === 0 ? 'not-allowed' : 'pointer' }}
-                >
+                <button onClick={handlePrevQuestion} disabled={quizIndex === 0} className="btn-secondary" style={{ opacity: quizIndex === 0 ? 0.5 : 1, cursor: quizIndex === 0 ? 'not-allowed' : 'pointer' }}>
                   <ChevronLeft size={16} /> Previous
                 </button>
 
@@ -755,7 +546,6 @@ export const Education = () => {
                 Your Final Score: {calculateTotalScore()} / 10 ({calculateTotalScore() * 10}%)
               </p>
 
-              {/* Answer Breakdown Table */}
               <div style={{ textAlign: 'left', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '20px', marginBottom: '28px' }}>
                 <h4 style={{ fontSize: '15px', fontWeight: '700', color: '#0f172a', marginBottom: '14px' }}>Question Results Summary:</h4>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
