@@ -1,0 +1,32 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual Environment
+backend/venv/
+venv/
+
+# Environment Variables
+backend/.env
+.env
+
+# Database
+backend/instance/
+*.db
+
+# VS Code
+.vscode/
+
+# Temporary files
+scratch/
+run_commands.txt
+trend_accuracy.txt
+
+# Test files
+backend/scratch/
+backend/test.py
+backend/test2.py
+backend/test_endpoints.py
+
+
