@@ -31,17 +31,17 @@ export const Register = () => {
 
   return (
     <div style={{ maxWidth: '440px', margin: '80px auto', padding: '0 20px' }}>
-      <div className="glass-panel" style={{ padding: '40px' }}>
-        <h2 style={{ fontSize: '24px', fontWeight: '700', marginBottom: '8px', textAlign: 'center' }}>Create Account</h2>
-        <p style={{ color: '#9ca3af', fontSize: '14px', textAlign: 'center', marginBottom: '24px' }}>
+      <div className="glass-panel" style={{ padding: '40px', background: '#ffffff' }}>
+        <h2 style={{ fontSize: '24px', fontWeight: '800', color: '#0f172a', marginBottom: '8px', textAlign: 'center' }}>Create Account</h2>
+        <p style={{ color: '#64748b', fontSize: '14px', textAlign: 'center', marginBottom: '24px' }}>
           Join FinGuide AI to start your financial forecasting journey.
         </p>
 
         {error && (
           <div style={{
-            background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)',
-            color: '#f87171', padding: '10px 14px', borderRadius: '8px', fontSize: '13px',
-            display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px'
+            background: '#fef2f2', border: '1px solid #fecaca',
+            color: '#b91c1c', padding: '10px 14px', borderRadius: '8px', fontSize: '13px',
+            display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px', fontWeight: '600'
           }}>
             <AlertCircle size={16} /> {error}
           </div>
@@ -49,9 +49,9 @@ export const Register = () => {
 
         {success && (
           <div style={{
-            background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.3)',
-            color: '#34d399', padding: '10px 14px', borderRadius: '8px', fontSize: '13px',
-            display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px'
+            background: '#ecfdf5', border: '1px solid #a7f3d0',
+            color: '#047857', padding: '10px 14px', borderRadius: '8px', fontSize: '13px',
+            display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px', fontWeight: '600'
           }}>
             <CheckCircle size={16} /> {success}
           </div>
@@ -59,7 +59,7 @@ export const Register = () => {
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
-            <label style={{ fontSize: '13px', color: '#9ca3af', display: 'block', marginBottom: '6px' }}>Username</label>
+            <label style={{ fontSize: '13px', color: '#475569', fontWeight: '600', display: 'block', marginBottom: '6px' }}>Username</label>
             <input 
               type="text" 
               className="glass-input" 
@@ -71,7 +71,7 @@ export const Register = () => {
           </div>
 
           <div>
-            <label style={{ fontSize: '13px', color: '#9ca3af', display: 'block', marginBottom: '6px' }}>Password</label>
+            <label style={{ fontSize: '13px', color: '#475569', fontWeight: '600', display: 'block', marginBottom: '6px' }}>Password</label>
             <input 
               type="password" 
               className="glass-input" 
@@ -87,8 +87,8 @@ export const Register = () => {
           </button>
         </form>
 
-        <p style={{ fontSize: '13px', color: '#9ca3af', textAlign: 'center', marginTop: '20px' }}>
-          Already have an account? <Link to="/login" style={{ color: '#60a5fa', fontWeight: '600' }}>Sign In</Link>
+        <p style={{ fontSize: '13px', color: '#64748b', textAlign: 'center', marginTop: '20px' }}>
+          Already have an account? <Link to="/login" style={{ color: '#2563eb', fontWeight: '700' }}>Sign In</Link>
         </p>
       </div>
     </div>

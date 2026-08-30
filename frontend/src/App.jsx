@@ -10,6 +10,7 @@ import { Dashboard } from './pages/Dashboard';
 import { StockDetail } from './pages/StockDetail';
 import { RiskAssessment } from './pages/RiskAssessment';
 import { Recommendations } from './pages/Recommendations';
+import { Education } from './pages/Education';
 import { AIChat } from './pages/AIChat';
 import { Profile } from './pages/Profile';
 
@@ -28,6 +29,7 @@ export default function App() {
               <Route path="/stock/:ticker" element={<StockDetail />} />
               <Route path="/risk-assessment" element={<RiskAssessment />} />
               <Route path="/recommendations" element={<Recommendations />} />
+              <Route path="/education" element={<Education />} />
               <Route path="/chat" element={<AIChat />} />
               <Route path="/profile" element={<Profile />} />
             </Routes>

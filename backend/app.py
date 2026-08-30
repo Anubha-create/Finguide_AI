@@ -8,6 +8,7 @@ from routes.user import user_bp
 from routes.stocks import stocks_bp
 from routes.dashboard import dashboard_bp
 from routes.chat import chat_bp
+from routes.education import education_bp
 
 def create_app():
     app = Flask(__name__)
@@ -33,6 +34,7 @@ def create_app():
     app.register_blueprint(stocks_bp, url_prefix='/api/stocks')
     app.register_blueprint(dashboard_bp, url_prefix='/api/dashboard')
     app.register_blueprint(chat_bp, url_prefix='/api/chat')
+    app.register_blueprint(education_bp, url_prefix='/api/education')
     
     @app.route('/')
     def root():

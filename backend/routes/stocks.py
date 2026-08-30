@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from models import UserProfile
 from ml.forecaster import generate_historical_prices, predict_stock_trend, PREDEFINED_BENCHMARKS
@@ -6,13 +6,22 @@ from ml.forecaster import generate_historical_prices, predict_stock_trend, PREDE
 stocks_bp = Blueprint('stocks', __name__)
 
 @stocks_bp.route('/recommendations', methods=['GET'])
-@jwt_required()
+@jwt_required(optional=True)
 def recommendations():
     current_user_id = get_jwt_identity()
-    profile = UserProfile.query.filter_by(user_id=int(current_user_id)).first()
+    requested_risk = request.args.get('risk')
     
-    risk_level = profile.risk_profile if profile else 'Medium'
-    
+    risk_level = 'Medium'
+    if requested_risk and requested_risk in ['Low', 'Medium', 'High']:
+        risk_level = requested_risk
+    elif current_user_id:
+        try:
+            profile = UserProfile.query.filter_by(user_id=int(current_user_id)).first()
+            if profile and profile.risk_profile:
+                risk_level = profile.risk_profile
+        except Exception:
+            pass
+            
     all_assets = [
         {'ticker': 'VOO', 'name': 'Vanguard S&P 500 ETF', 'type': 'ETF', 'risk': 'Low', 'expected_return': '8-10%', 'volatility': '16.81%', 'accuracy': '88.89%'},
         {'ticker': 'BND', 'name': 'Vanguard Total Bond Market ETF', 'type': 'Bond ETF', 'risk': 'Low', 'expected_return': '4-5%', 'volatility': '6.02%', 'accuracy': '97.97%'},
@@ -23,23 +32,26 @@ def recommendations():
     ]
     
     if risk_level == 'Low':
-        recs = [a for a in all_assets if a['risk'] in ['Low', 'Medium']][:4]
+        recs = [a for a in all_assets if a['risk'] in ['Low', 'Medium']]
     elif risk_level == 'High':
-        recs = [a for a in all_assets if a['risk'] in ['Medium', 'High']][:4]
+        recs = [a for a in all_assets if a['risk'] in ['Medium', 'High']]
     else:
-        recs = [a for a in all_assets if a['risk'] in ['Low', 'Medium', 'High']][:4]
+        recs = all_assets
         
     return jsonify(recs), 200
 
 @stocks_bp.route('/<ticker>/history', methods=['GET'])
 def stock_history(ticker):
-    history = generate_historical_prices(ticker, days=180)
+    tf = request.args.get('timeframe', '1M')
+    history = generate_historical_prices(ticker, timeframe=tf)
     return jsonify({
         'ticker': ticker.upper(),
+        'timeframe': tf,
         'history': history
     }), 200
 
 @stocks_bp.route('/<ticker>/predict', methods=['GET'])
 def stock_predict(ticker):
-    result = predict_stock_trend(ticker)
+    tf = request.args.get('timeframe', '1M')
+    result = predict_stock_trend(ticker, timeframe=tf)
     return jsonify(result), 200

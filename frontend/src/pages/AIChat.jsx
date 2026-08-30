@@ -42,16 +42,16 @@ export const AIChat = () => {
   return (
     <div style={{ maxWidth: '840px', margin: '0 auto', padding: '40px 20px' }}>
       <div style={{ textAlign: 'center', marginBottom: '28px' }}>
-        <div style={{ background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)', width: '56px', height: '56px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
-          <Bot size={28} color="#fff" />
+        <div style={{ background: 'linear-gradient(135deg, #2563eb, #7c3aed)', width: '56px', height: '56px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
+          <Bot size={28} color="#ffffff" />
         </div>
-        <h1 style={{ fontSize: '30px', fontWeight: '800', marginBottom: '6px' }}>Gemini AI Financial Advisor</h1>
-        <p style={{ color: '#9ca3af', fontSize: '14px' }}>
+        <h1 style={{ fontSize: '30px', fontWeight: '800', color: '#0f172a', marginBottom: '6px' }}>Gemini AI Financial Advisor</h1>
+        <p style={{ color: '#475569', fontSize: '14px' }}>
           Real-time Q&A on investing, portfolio strategies, compound growth, and market metrics.
         </p>
       </div>
 
-      <div className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', height: '540px' }}>
+      <div className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', height: '540px', background: '#ffffff' }}>
         {/* Messages Container */}
         <div style={{ flex: 1, overflowY: 'auto', paddingRight: '8px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {messages.map((m, idx) => (
@@ -61,22 +61,23 @@ export const AIChat = () => {
               maxWidth: '85%'
             }}>
               {m.sender === 'bot' && (
-                <div style={{ background: 'rgba(99, 102, 241, 0.2)', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <Bot size={16} color="#a5b4fc" />
+                <div style={{ background: '#dbeafe', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <Bot size={16} color="#2563eb" />
                 </div>
               )}
 
               <div style={{
-                background: m.sender === 'user' ? 'linear-gradient(135deg, #3b82f6, #8b5cf6)' : 'rgba(255, 255, 255, 0.06)',
-                color: '#fff', padding: '12px 16px', borderRadius: '14px', fontSize: '14px', lineHeight: 1.5,
-                border: m.sender === 'bot' ? '1px solid rgba(255, 255, 255, 0.1)' : 'none'
+                background: m.sender === 'user' ? 'linear-gradient(135deg, #2563eb, #1d4ed8)' : '#f1f5f9',
+                color: m.sender === 'user' ? '#ffffff' : '#0f172a', padding: '12px 16px', borderRadius: '14px', fontSize: '14px', lineHeight: 1.5,
+                border: m.sender === 'bot' ? '1px solid #cbd5e1' : 'none',
+                fontWeight: m.sender === 'bot' ? '500' : '600'
               }}>
                 {m.text}
               </div>
 
               {m.sender === 'user' && (
-                <div style={{ background: 'rgba(255, 255, 255, 0.1)', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <User size={16} color="#fff" />
+                <div style={{ background: '#2563eb', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <User size={16} color="#ffffff" />
                 </div>
               )}
             </div>
@@ -84,10 +85,10 @@ export const AIChat = () => {
 
           {loading && (
             <div style={{ display: 'flex', gap: '12px', alignSelf: 'flex-start' }}>
-              <div style={{ background: 'rgba(99, 102, 241, 0.2)', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Activity size={16} className="animate-spin" color="#a5b4fc" />
+              <div style={{ background: '#dbeafe', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Activity size={16} className="animate-spin" color="#2563eb" />
               </div>
-              <div style={{ background: 'rgba(255, 255, 255, 0.06)', padding: '12px 16px', borderRadius: '14px', fontSize: '13px', color: '#9ca3af' }}>
+              <div style={{ background: '#f1f5f9', padding: '12px 16px', borderRadius: '14px', fontSize: '13px', color: '#64748b' }}>
                 FinGuide AI is thinking...
               </div>
             </div>
@@ -95,14 +96,14 @@ export const AIChat = () => {
         </div>
 
         {/* Quick Prompts */}
-        <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', padding: '12px 0', marginTop: '12px', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
+        <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', padding: '12px 0', marginTop: '12px', borderTop: '1px solid #e2e8f0' }}>
           {quickPrompts.map((p, idx) => (
             <button key={idx} onClick={() => handleSend(p)} style={{
-              background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)',
-              borderRadius: '16px', padding: '6px 12px', fontSize: '12px', color: '#9ca3af', whiteSpace: 'nowrap',
+              background: '#f8fafc', border: '1px solid #cbd5e1',
+              borderRadius: '16px', padding: '6px 12px', fontSize: '12px', color: '#334155', fontWeight: '600', whiteSpace: 'nowrap',
               transition: 'background 0.2s'
             }}>
-              <Sparkles size={12} style={{ display: 'inline', marginRight: '4px' }} /> {p}
+              <Sparkles size={12} style={{ display: 'inline', marginRight: '4px', color: '#2563eb' }} /> {p}
             </button>
           ))}
         </div>

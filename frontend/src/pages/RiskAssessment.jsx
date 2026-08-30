@@ -9,10 +9,10 @@ export const RiskAssessment = () => {
   const navigate = useNavigate();
 
   const [answers, setAnswers] = useState({
-    q1: 2, // Investment horizon
-    q2: 3, // Volatility tolerance
-    q3: 3, // Experience
-    q4: 2  // Goal priority
+    q1: 2,
+    q2: 3,
+    q3: 3,
+    q4: 2
   });
 
   const [result, setResult] = useState(null);
@@ -36,61 +36,61 @@ export const RiskAssessment = () => {
   return (
     <div style={{ maxWidth: '760px', margin: '0 auto', padding: '40px 20px' }}>
       <div style={{ textAlign: 'center', marginBottom: '36px' }}>
-        <div style={{ background: 'rgba(16, 185, 129, 0.15)', width: '56px', height: '56px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-          <ShieldCheck size={28} color="#34d399" />
+        <div style={{ background: '#ecfdf5', border: '1px solid #a7f3d0', width: '56px', height: '56px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+          <ShieldCheck size={28} color="#059669" />
         </div>
-        <h1 style={{ fontSize: '32px', fontWeight: '800', marginBottom: '8px' }}>Investor Risk Assessment</h1>
-        <p style={{ color: '#9ca3af', fontSize: '15px' }}>
+        <h1 style={{ fontSize: '32px', fontWeight: '800', color: '#0f172a', marginBottom: '8px' }}>Investor Risk Assessment</h1>
+        <p style={{ color: '#475569', fontSize: '15px' }}>
           Evaluate your risk tolerance score to receive tailored asset allocation recommendations.
         </p>
       </div>
 
-      <div className="glass-panel" style={{ padding: '36px' }}>
+      <div className="glass-panel" style={{ padding: '36px', background: '#ffffff' }}>
         {/* Question 1 */}
         <div style={{ marginBottom: '28px' }}>
-          <label style={{ fontSize: '15px', fontWeight: '700', display: 'block', marginBottom: '12px' }}>
+          <label style={{ fontSize: '15px', fontWeight: '700', color: '#0f172a', display: 'block', marginBottom: '12px' }}>
             1. What is your expected investment timeframe?
           </label>
           <select className="glass-input" value={answers.q1} onChange={(e) => setAnswers({ ...answers, q1: e.target.value })}>
-            <option value={1} style={{ background: '#121826' }}>Short term (&lt; 2 years) - Low Risk</option>
-            <option value={3} style={{ background: '#121826' }}>Medium term (2 - 5 years) - Balanced</option>
-            <option value={5} style={{ background: '#121826' }}>Long term (5+ years) - High Growth</option>
+            <option value={1}>Short term (&lt; 2 years) - Low Risk</option>
+            <option value={3}>Medium term (2 - 5 years) - Balanced</option>
+            <option value={5}>Long term (5+ years) - High Growth</option>
           </select>
         </div>
 
         {/* Question 2 */}
         <div style={{ marginBottom: '28px' }}>
-          <label style={{ fontSize: '15px', fontWeight: '700', display: 'block', marginBottom: '12px' }}>
+          <label style={{ fontSize: '15px', fontWeight: '700', color: '#0f172a', display: 'block', marginBottom: '12px' }}>
             2. How would you react if your portfolio value dropped by 15% in a market dip?
           </label>
           <select className="glass-input" value={answers.q2} onChange={(e) => setAnswers({ ...answers, q2: e.target.value })}>
-            <option value={1} style={{ background: '#121826' }}>Sell everything immediately to prevent losses</option>
-            <option value={3} style={{ background: '#121826' }}>Hold positions and wait for recovery</option>
-            <option value={5} style={{ background: '#121826' }}>Buy more shares at lower prices</option>
+            <option value={1}>Sell everything immediately to prevent losses</option>
+            <option value={3}>Hold positions and wait for recovery</option>
+            <option value={5}>Buy more shares at lower prices</option>
           </select>
         </div>
 
         {/* Question 3 */}
         <div style={{ marginBottom: '28px' }}>
-          <label style={{ fontSize: '15px', fontWeight: '700', display: 'block', marginBottom: '12px' }}>
+          <label style={{ fontSize: '15px', fontWeight: '700', color: '#0f172a', display: 'block', marginBottom: '12px' }}>
             3. What is your investing experience level?
           </label>
           <select className="glass-input" value={answers.q3} onChange={(e) => setAnswers({ ...answers, q3: e.target.value })}>
-            <option value={1} style={{ background: '#121826' }}>Beginner - Just getting started</option>
-            <option value={3} style={{ background: '#121826' }}>Intermediate - Familiar with ETFs & Stocks</option>
-            <option value={5} style={{ background: '#121826' }}>Advanced - Active trader & option strategies</option>
+            <option value={1}>Beginner - Just getting started</option>
+            <option value={3}>Intermediate - Familiar with ETFs & Stocks</option>
+            <option value={5}>Advanced - Active trader & option strategies</option>
           </select>
         </div>
 
         {/* Question 4 */}
         <div style={{ marginBottom: '32px' }}>
-          <label style={{ fontSize: '15px', fontWeight: '700', display: 'block', marginBottom: '12px' }}>
+          <label style={{ fontSize: '15px', fontWeight: '700', color: '#0f172a', display: 'block', marginBottom: '12px' }}>
             4. What is your primary investment goal?
           </label>
           <select className="glass-input" value={answers.q4} onChange={(e) => setAnswers({ ...answers, q4: e.target.value })}>
-            <option value={1} style={{ background: '#121826' }}>Capital Preservation & Stability</option>
-            <option value={3} style={{ background: '#121826' }}>Balanced Growth & Moderate Income</option>
-            <option value={5} style={{ background: '#121826' }}>Maximum Capital Growth</option>
+            <option value={1}>Capital Preservation & Stability</option>
+            <option value={3}>Balanced Growth & Moderate Income</option>
+            <option value={5}>Maximum Capital Growth</option>
           </select>
         </div>
 
@@ -102,14 +102,14 @@ export const RiskAssessment = () => {
         {result && (
           <div style={{
             marginTop: '32px', padding: '24px', borderRadius: '12px',
-            background: 'rgba(59, 130, 246, 0.12)', border: '1px solid rgba(59, 130, 246, 0.3)',
+            background: '#dbeafe', border: '1px solid #bfdbfe',
             textAlign: 'center'
           }}>
-            <CheckCircle2 size={36} color="#34d399" style={{ margin: '0 auto 10px' }} />
-            <h3 style={{ fontSize: '20px', fontWeight: '800' }}>
-              Your Risk Profile: <span style={{ color: '#60a5fa' }}>{result.risk_profile} Risk</span>
+            <CheckCircle2 size={36} color="#059669" style={{ margin: '0 auto 10px' }} />
+            <h3 style={{ fontSize: '20px', fontWeight: '800', color: '#0f172a' }}>
+              Your Risk Profile: <span style={{ color: '#2563eb' }}>{result.risk_profile} Risk</span>
             </h3>
-            <p style={{ color: '#9ca3af', fontSize: '14px', margin: '8px 0 20px' }}>
+            <p style={{ color: '#475569', fontSize: '14px', margin: '8px 0 20px', fontWeight: '500' }}>
               Calculated Score: {result.risk_score} / 20 points
             </p>
 

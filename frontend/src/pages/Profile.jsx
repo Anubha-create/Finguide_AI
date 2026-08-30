@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
-import { User, Save, CheckCircle2, ShieldAlert } from 'lucide-react';
+import { User, Save, CheckCircle2 } from 'lucide-react';
 
 export const Profile = () => {
   const { profile, setProfile, fetchProfile } = useContext(AuthContext);
@@ -37,7 +37,7 @@ export const Profile = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post('/api/user/update', formData);
+      await axios.post('/api/user/update', formData);
       setSuccess('Profile updated successfully!');
       if (fetchProfile) fetchProfile();
     } catch (err) {
@@ -50,21 +50,21 @@ export const Profile = () => {
   return (
     <div style={{ maxWidth: '640px', margin: '0 auto', padding: '40px 20px' }}>
       <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-        <div style={{ background: 'rgba(59, 130, 246, 0.15)', width: '56px', height: '56px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-          <User size={28} color="#60a5fa" />
+        <div style={{ background: '#dbeafe', width: '56px', height: '56px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+          <User size={28} color="#2563eb" />
         </div>
-        <h1 style={{ fontSize: '30px', fontWeight: '800', marginBottom: '6px' }}>Investor Profile & Settings</h1>
-        <p style={{ color: '#9ca3af', fontSize: '14px' }}>
+        <h1 style={{ fontSize: '30px', fontWeight: '800', color: '#0f172a', marginBottom: '6px' }}>Investor Profile & Settings</h1>
+        <p style={{ color: '#475569', fontSize: '14px' }}>
           Manage your personal financial parameters and investment preferences.
         </p>
       </div>
 
-      <div className="glass-panel" style={{ padding: '36px' }}>
+      <div className="glass-panel" style={{ padding: '36px', background: '#ffffff' }}>
         {success && (
           <div style={{
-            background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.3)',
-            color: '#34d399', padding: '10px 14px', borderRadius: '8px', fontSize: '13px',
-            display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px'
+            background: '#ecfdf5', border: '1px solid #a7f3d0',
+            color: '#047857', padding: '10px 14px', borderRadius: '8px', fontSize: '13px',
+            display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px', fontWeight: '600'
           }}>
             <CheckCircle2 size={16} /> {success}
           </div>
@@ -72,7 +72,7 @@ export const Profile = () => {
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div>
-            <label style={{ fontSize: '13px', color: '#9ca3af', display: 'block', marginBottom: '6px' }}>Full Name</label>
+            <label style={{ fontSize: '13px', color: '#475569', fontWeight: '600', display: 'block', marginBottom: '6px' }}>Full Name</label>
             <input 
               type="text" 
               className="glass-input" 
@@ -82,7 +82,7 @@ export const Profile = () => {
           </div>
 
           <div>
-            <label style={{ fontSize: '13px', color: '#9ca3af', display: 'block', marginBottom: '6px' }}>Age</label>
+            <label style={{ fontSize: '13px', color: '#475569', fontWeight: '600', display: 'block', marginBottom: '6px' }}>Age</label>
             <input 
               type="number" 
               className="glass-input" 
@@ -92,16 +92,16 @@ export const Profile = () => {
           </div>
 
           <div>
-            <label style={{ fontSize: '13px', color: '#9ca3af', display: 'block', marginBottom: '6px' }}>Investing Experience</label>
+            <label style={{ fontSize: '13px', color: '#475569', fontWeight: '600', display: 'block', marginBottom: '6px' }}>Investing Experience</label>
             <select className="glass-input" value={formData.investing_experience} onChange={(e) => setFormData({ ...formData, investing_experience: e.target.value })}>
-              <option value="Beginner" style={{ background: '#121826' }}>Beginner</option>
-              <option value="Intermediate" style={{ background: '#121826' }}>Intermediate</option>
-              <option value="Advanced" style={{ background: '#121826' }}>Advanced</option>
+              <option value="Beginner">Beginner</option>
+              <option value="Intermediate">Intermediate</option>
+              <option value="Advanced">Advanced</option>
             </select>
           </div>
 
           <div>
-            <label style={{ fontSize: '13px', color: '#9ca3af', display: 'block', marginBottom: '6px' }}>Primary Goal</label>
+            <label style={{ fontSize: '13px', color: '#475569', fontWeight: '600', display: 'block', marginBottom: '6px' }}>Primary Goal</label>
             <input 
               type="text" 
               className="glass-input" 
@@ -111,11 +111,11 @@ export const Profile = () => {
           </div>
 
           <div>
-            <label style={{ fontSize: '13px', color: '#9ca3af', display: 'block', marginBottom: '6px' }}>Risk Profile</label>
+            <label style={{ fontSize: '13px', color: '#475569', fontWeight: '600', display: 'block', marginBottom: '6px' }}>Risk Profile</label>
             <select className="glass-input" value={formData.risk_profile} onChange={(e) => setFormData({ ...formData, risk_profile: e.target.value })}>
-              <option value="Low" style={{ background: '#121826' }}>Low Risk</option>
-              <option value="Medium" style={{ background: '#121826' }}>Medium Risk</option>
-              <option value="High" style={{ background: '#121826' }}>High Risk</option>
+              <option value="Low">Low Risk</option>
+              <option value="Medium">Medium Risk</option>
+              <option value="High">High Risk</option>
             </select>
           </div>
 
