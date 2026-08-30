@@ -1,0 +1,27 @@
+services:
+  # Backend Flask API Web Service
+  - type: web
+    name: finguide-ai-backend
+    env: python
+    region: singapore
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && gunicorn "app:create_app()"
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: GEMINI_API_KEY
+        sync: false
+
+  # Frontend React Static Site
+  - type: web
+    name: finguide-ai-frontend
+    env: static
+    region: singapore
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: ./frontend/dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
