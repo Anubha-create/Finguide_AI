@@ -11,14 +11,11 @@ services:
         generateValue: true
       - key: JWT_SECRET_KEY
         generateValue: true
-      - key: GEMINI_API_KEY
-        sync: false
 
   # Frontend React Static Site
   - type: web
     name: finguide-ai-frontend
     env: static
-    region: singapore
     buildCommand: cd frontend && npm install && npm run build
     staticPublishPath: ./frontend/dist
     routes:
