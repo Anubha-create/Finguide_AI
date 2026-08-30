@@ -1,4 +1,7 @@
 import os
+from dotenv import load_dotenv
+load_dotenv()
+
 from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
@@ -18,9 +21,16 @@ def create_app():
     app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY', 'finguide_jwt_secret_key_2026')
     
     # Database
-    db_path = os.path.join(app.root_path, 'instance', 'finguide.db')
-    os.makedirs(os.path.dirname(db_path), exist_ok=True)
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', f'sqlite:///{db_path}')
+    db_dir = os.path.join(app.root_path, 'instance')
+    os.makedirs(db_dir, exist_ok=True)
+    db_path = os.path.join(db_dir, 'finguide.db')
+    
+    env_db = os.environ.get('DATABASE_URL')
+    if env_db and not env_db.startswith('sqlite:///instance'):
+        app.config['SQLALCHEMY_DATABASE_URI'] = env_db
+    else:
+        app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
     # Extensions
