@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { GraduationCap, BookOpen, CheckCircle, Clock, Award, HelpCircle, ChevronRight, ChevronLeft, RefreshCw, CheckCircle2, XCircle } from 'lucide-react';
+import { GraduationCap, BookOpen, CheckCircle, Clock, Award, HelpCircle, ChevronRight, ChevronLeft, RefreshCw, CheckCircle2, XCircle, FileText, Check } from 'lucide-react';
 
-const PRACTICE_QUIZZES = {
+const MASTER_QUIZZES = {
   Beginner: [
     {
       id: 1,
@@ -303,7 +303,7 @@ const PRACTICE_QUIZZES = {
         "They convert stocks into bonds"
       ],
       correctIndex: 0,
-      explanation: "Lagged historical price inputs allow decision models to capture momentum, mean-reversion, and autocorrelation."
+      explanation: "Lagged historical price inputs allow decision trees to capture momentum, mean-reversion, and autocorrelation."
     },
     {
       id: 7,
@@ -345,13 +345,13 @@ const PRACTICE_QUIZZES = {
       id: 10,
       question: "How does Federal Reserve Quantitative Tightening (QT) affect market liquidity?",
       options: [
-        "It increases cash supply in commercial banks",
-        "It contracts the Fed balance sheet by reducing bond holdings, removing liquidity from financial markets",
-        "It lowers interest rates to zero",
-        "It guarantees rising stock market indices"
+        "It contracts the central bank balance sheet, removing liquidity from financial markets",
+        "It increases cash supply in commercial bank vaults",
+        "It lowers federal funds rates to zero percent",
+        "It guarantees stock indices will reach record highs"
       ],
       correctIndex: 1,
-      explanation: "QT shrinks central bank balance sheets by letting bonds mature without reinvestment, contracting monetary reserves."
+      explanation: "QT reduces central bank bond holdings, pulling money reserves out of financial institutions and contracting market liquidity."
     }
   ]
 };
@@ -361,7 +361,14 @@ export const Education = () => {
   const [activeTab, setActiveTab] = useState('Beginner');
   const [selectedModule, setSelectedModule] = useState(null);
   
-  // Practice Quiz State (10 Questions per level)
+  // Module-specific quiz answers state
+  const [moduleAnswers, setModuleAnswers] = useState({});
+  const [moduleScores, setModuleScores] = useState({});
+
+  // View Mode: 'read' (Module Lessons + Lesson Quiz) vs 'test' (Master 10-Question Exam)
+  const [viewMode, setViewMode] = useState('read');
+
+  // Master Test State (10 Questions per level)
   const [quizIndex, setQuizIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState({});
   const [quizFinished, setQuizFinished] = useState(false);
@@ -388,6 +395,8 @@ export const Education = () => {
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
+    setModuleAnswers({});
+    setModuleScores({});
     setQuizIndex(0);
     setUserAnswers({});
     setQuizFinished(false);
@@ -396,8 +405,12 @@ export const Education = () => {
     }
   };
 
-  const currentQuizList = PRACTICE_QUIZZES[activeTab] || [];
-  const currentQuestion = currentQuizList[quizIndex] || currentQuizList[0];
+  const handleModuleQuizSelect = (qIdx, optIdx) => {
+    setModuleAnswers(prev => ({ ...prev, [qIdx]: optIdx }));
+  };
+
+  const currentMasterQuizList = MASTER_QUIZZES[activeTab] || [];
+  const currentQuestion = currentMasterQuizList[quizIndex] || currentMasterQuizList[0];
 
   const handleOptionSelect = (optionIdx) => {
     if (quizFinished) return;
@@ -405,7 +418,7 @@ export const Education = () => {
   };
 
   const handleNextQuestion = () => {
-    if (quizIndex < currentQuizList.length - 1) {
+    if (quizIndex < currentMasterQuizList.length - 1) {
       setQuizIndex(prev => prev + 1);
     } else {
       setQuizFinished(true);
@@ -426,7 +439,7 @@ export const Education = () => {
 
   const calculateTotalScore = () => {
     let score = 0;
-    currentQuizList.forEach((q, idx) => {
+    currentMasterQuizList.forEach((q, idx) => {
       if (userAnswers[idx] === q.correctIndex) {
         score += 1;
       }
@@ -447,12 +460,12 @@ export const Education = () => {
         </div>
         <h1 style={{ fontSize: '32px', fontWeight: '800', marginBottom: '8px', color: '#0f172a' }}>Financial Education & Practice Hub</h1>
         <p style={{ color: '#475569', fontSize: '15px', maxWidth: '650px', margin: '0 auto' }}>
-          Master financial literacy, quantitative modeling, and test your knowledge with 10 practice questions per level.
+          Read in-depth lessons and solve targeted practice questions based directly on the reading material.
         </p>
       </div>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', marginBottom: '36px', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', marginBottom: '24px', flexWrap: 'wrap' }}>
         {['Beginner', 'Intermediate', 'Advanced'].map((tab) => (
           <button
             key={tab}
@@ -478,184 +491,298 @@ export const Education = () => {
         ))}
       </div>
 
-      {/* Main Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(320px, 1fr) minmax(400px, 1.8fr)', gap: '28px', marginBottom: '40px' }}>
-        {/* Left Column: Course Modules */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <BookOpen size={18} color="#2563eb" /> {activeTab} Learning Modules
-          </h3>
+      {/* Mode Switcher: Reading Modules vs 10-Question Master Test */}
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '36px' }}>
+        <button
+          onClick={() => setViewMode('read')}
+          style={{
+            padding: '10px 22px',
+            borderRadius: '20px',
+            fontSize: '13px',
+            fontWeight: '700',
+            border: '1px solid',
+            borderColor: viewMode === 'read' ? '#2563eb' : '#cbd5e1',
+            background: viewMode === 'read' ? '#dbeafe' : '#ffffff',
+            color: viewMode === 'read' ? '#1e40af' : '#475569',
+            display: 'flex', alignItems: 'center', gap: '6px'
+          }}
+        >
+          <BookOpen size={16} /> Read Lessons & Lesson Quizzes
+        </button>
 
-          {modules[activeTab]?.map((item) => {
-            const isSelected = selectedModule?.id === item.id;
-            return (
-              <div
-                key={item.id}
-                onClick={() => setSelectedModule(item)}
-                className="glass-panel"
-                style={{
-                  padding: '20px',
-                  cursor: 'pointer',
-                  borderColor: isSelected ? '#2563eb' : '#e2e8f0',
-                  borderWidth: isSelected ? '2px' : '1px',
-                  background: isSelected ? '#eff6ff' : '#ffffff'
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <span style={{ fontSize: '11px', fontWeight: '700', color: '#2563eb', background: '#dbeafe', padding: '3px 10px', borderRadius: '12px' }}>
-                    {item.category}
-                  </span>
-                  <span style={{ fontSize: '12px', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <Clock size={14} /> {item.duration}
-                  </span>
-                </div>
-                <h4 style={{ fontSize: '16px', fontWeight: '700', color: '#0f172a', marginBottom: '6px' }}>{item.title}</h4>
-                <p style={{ fontSize: '13px', color: '#475569', lineHeight: 1.5 }}>{item.summary}</p>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Right Column: Module Reader */}
-        <div>
-          {selectedModule ? (
-            <div className="glass-panel" style={{ padding: '32px', background: '#ffffff' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#2563eb', fontWeight: '700', fontSize: '13px', marginBottom: '12px' }}>
-                <Award size={16} /> {activeTab} Level Courseware
-              </div>
-              <h2 style={{ fontSize: '24px', fontWeight: '800', color: '#0f172a', marginBottom: '16px', lineHeight: 1.3 }}>
-                {selectedModule.title}
-              </h2>
-              <div style={{ background: '#f8fafc', borderLeft: '4px solid #2563eb', padding: '18px 22px', borderRadius: '0 10px 10px 0', fontSize: '15px', color: '#334155', lineHeight: 1.7, border: '1px solid #e2e8f0', borderLeftColor: '#2563eb' }}>
-                {selectedModule.content}
-              </div>
-            </div>
-          ) : (
-            <div className="glass-panel" style={{ padding: '40px', textAlign: 'center', color: '#64748b', background: '#ffffff' }}>
-              Select a module from the list to begin learning.
-            </div>
-          )}
-        </div>
+        <button
+          onClick={() => setViewMode('test')}
+          style={{
+            padding: '10px 22px',
+            borderRadius: '20px',
+            fontSize: '13px',
+            fontWeight: '700',
+            border: '1px solid',
+            borderColor: viewMode === 'test' ? '#7c3aed' : '#cbd5e1',
+            background: viewMode === 'test' ? '#f3e8ff' : '#ffffff',
+            color: viewMode === 'test' ? '#6b21a8' : '#475569',
+            display: 'flex', alignItems: 'center', gap: '6px'
+          }}
+        >
+          <Award size={16} /> Take {activeTab} Master Practice Test (10 Qs)
+        </button>
       </div>
 
-      {/* 10-Question Practice Test Suite */}
-      <div className="glass-panel" style={{ padding: '32px', background: '#ffffff' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', marginBottom: '20px', borderBottom: '1px solid #e2e8f0', paddingBottom: '16px' }}>
-          <div>
-            <h3 style={{ fontSize: '20px', fontWeight: '800', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <HelpCircle size={22} color="#2563eb" /> {activeTab} Level Practice Test (10 Questions)
+      {viewMode === 'read' ? (
+        /* Reading & Lesson Quiz View */
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(320px, 1fr) minmax(400px, 1.8fr)', gap: '28px', marginBottom: '40px' }}>
+          {/* Left Column: Lesson Modules List */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <BookOpen size={18} color="#2563eb" /> {activeTab} Reading Curriculum
             </h3>
-            <p style={{ fontSize: '13px', color: '#64748b' }}>Test your mastery of {activeTab.toLowerCase()} concepts before moving to higher levels.</p>
+
+            {modules[activeTab]?.map((item) => {
+              const isSelected = selectedModule?.id === item.id;
+              return (
+                <div
+                  key={item.id}
+                  onClick={() => { setSelectedModule(item); setModuleAnswers({}); }}
+                  className="glass-panel"
+                  style={{
+                    padding: '20px',
+                    cursor: 'pointer',
+                    borderColor: isSelected ? '#2563eb' : '#e2e8f0',
+                    borderWidth: isSelected ? '2px' : '1px',
+                    background: isSelected ? '#eff6ff' : '#ffffff'
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <span style={{ fontSize: '11px', fontWeight: '700', color: '#2563eb', background: '#dbeafe', padding: '3px 10px', borderRadius: '12px' }}>
+                      {item.category}
+                    </span>
+                    <span style={{ fontSize: '12px', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <Clock size={14} /> {item.duration}
+                    </span>
+                  </div>
+                  <h4 style={{ fontSize: '16px', fontWeight: '700', color: '#0f172a', marginBottom: '6px' }}>{item.title}</h4>
+                  <p style={{ fontSize: '13px', color: '#475569', lineHeight: 1.5 }}>{item.summary}</p>
+                </div>
+              );
+            })}
           </div>
 
-          {!quizFinished && (
-            <span style={{ fontSize: '14px', fontWeight: '700', color: '#2563eb', background: '#dbeafe', padding: '6px 14px', borderRadius: '20px' }}>
-              Question {quizIndex + 1} of 10
-            </span>
-          )}
-        </div>
-
-        {!quizFinished ? (
+          {/* Right Column: In-Depth Lesson Content + Lesson-Based Practice Questions */}
           <div>
-            <h4 style={{ fontSize: '16px', fontWeight: '700', color: '#0f172a', marginBottom: '18px', lineHeight: 1.4 }}>
-              Q{quizIndex + 1}. {currentQuestion.question}
-            </h4>
+            {selectedModule ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                {/* Reading Card */}
+                <div className="glass-panel" style={{ padding: '32px', background: '#ffffff' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#2563eb', fontWeight: '700', fontSize: '13px', marginBottom: '12px' }}>
+                    <Award size={16} /> {activeTab} Level Lesson
+                  </div>
+                  <h2 style={{ fontSize: '24px', fontWeight: '800', color: '#0f172a', marginBottom: '20px', lineHeight: 1.3 }}>
+                    {selectedModule.title}
+                  </h2>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
-              {currentQuestion.options.map((optionText, optIdx) => {
-                const isSelected = userAnswers[quizIndex] === optIdx;
-                return (
-                  <button
-                    key={optIdx}
-                    onClick={() => handleOptionSelect(optIdx)}
-                    style={{
-                      textAlign: 'left',
-                      padding: '14px 18px',
-                      borderRadius: '10px',
-                      fontSize: '14px',
-                      fontWeight: '600',
-                      border: '1px solid',
-                      borderColor: isSelected ? '#2563eb' : '#cbd5e1',
-                      background: isSelected ? '#eff6ff' : '#ffffff',
-                      color: isSelected ? '#1e40af' : '#334155',
-                      boxShadow: isSelected ? '0 2px 8px rgba(37, 99, 235, 0.15)' : 'none',
-                      transition: 'all 0.2s ease'
-                    }}
-                  >
-                    <span style={{ marginRight: '10px', fontWeight: '800', color: isSelected ? '#2563eb' : '#94a3b8' }}>
-                      {String.fromCharCode(65 + optIdx)}.
-                    </span>
-                    {optionText}
-                  </button>
-                );
-              })}
-            </div>
+                  {/* Multi-Paragraph Lesson Content */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    {Array.isArray(selectedModule.content) ? (
+                      selectedModule.content.map((pText, pIdx) => (
+                        <div key={pIdx} style={{ background: '#f8fafc', borderLeft: '4px solid #2563eb', padding: '16px 20px', borderRadius: '0 8px 8px 0', fontSize: '15px', color: '#334155', lineHeight: 1.7, border: '1px solid #e2e8f0', borderLeftColor: '#2563eb' }}>
+                          <p>{pText}</p>
+                        </div>
+                      ))
+                    ) : (
+                      <div style={{ background: '#f8fafc', borderLeft: '4px solid #2563eb', padding: '16px 20px', borderRadius: '0 8px 8px 0', fontSize: '15px', color: '#334155', lineHeight: 1.7 }}>
+                        <p>{selectedModule.content}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
 
-            {userAnswers[quizIndex] !== undefined && (
-              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '12px 16px', borderRadius: '8px', fontSize: '13px', color: '#475569', marginBottom: '24px' }}>
-                💡 <strong>Explanation:</strong> {currentQuestion.explanation}
+                {/* Lesson-Based Practice Questions */}
+                {selectedModule.quiz && selectedModule.quiz.length > 0 && (
+                  <div className="glass-panel" style={{ padding: '32px', background: '#ffffff' }}>
+                    <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '18px' }}>
+                      <HelpCircle size={20} color="#2563eb" /> Practice Questions Based On This Reading
+                    </h3>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                      {selectedModule.quiz.map((q, qIdx) => {
+                        const selectedOpt = moduleAnswers[qIdx];
+                        const isAnswered = selectedOpt !== undefined;
+                        const isCorrect = selectedOpt === q.correctIndex;
+
+                        return (
+                          <div key={qIdx} style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '20px' }}>
+                            <h4 style={{ fontSize: '15px', fontWeight: '700', color: '#0f172a', marginBottom: '14px' }}>
+                              Question {qIdx + 1}: {q.question}
+                            </h4>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '14px' }}>
+                              {q.options.map((optText, optIdx) => (
+                                <button
+                                  key={optIdx}
+                                  onClick={() => handleModuleQuizSelect(qIdx, optIdx)}
+                                  style={{
+                                    textAlign: 'left',
+                                    padding: '12px 16px',
+                                    borderRadius: '8px',
+                                    fontSize: '13px',
+                                    fontWeight: '600',
+                                    border: '1px solid',
+                                    borderColor: selectedOpt === optIdx ? '#2563eb' : '#cbd5e1',
+                                    background: selectedOpt === optIdx ? '#dbeafe' : '#ffffff',
+                                    color: selectedOpt === optIdx ? '#1e40af' : '#334155',
+                                    transition: 'all 0.2s ease'
+                                  }}
+                                >
+                                  {String.fromCharCode(65 + optIdx)}. {optText}
+                                </button>
+                              ))}
+                            </div>
+
+                            {isAnswered && (
+                              <div style={{
+                                padding: '12px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: '600',
+                                background: isCorrect ? '#ecfdf5' : '#fef2f2',
+                                color: isCorrect ? '#047857' : '#b91c1c',
+                                border: '1px solid',
+                                borderColor: isCorrect ? '#a7f3d0' : '#fecaca'
+                              }}>
+                                💡 <strong>{isCorrect ? 'Correct!' : 'Incorrect.'}</strong> {q.explanation}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="glass-panel" style={{ padding: '40px', textAlign: 'center', color: '#64748b', background: '#ffffff' }}>
+                Select a module from the left to read lessons.
               </div>
             )}
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <button
-                onClick={handlePrevQuestion}
-                disabled={quizIndex === 0}
-                className="btn-secondary"
-                style={{ opacity: quizIndex === 0 ? 0.5 : 1, cursor: quizIndex === 0 ? 'not-allowed' : 'pointer' }}
-              >
-                <ChevronLeft size={16} /> Previous
-              </button>
-
-              <button
-                onClick={handleNextQuestion}
-                disabled={userAnswers[quizIndex] === undefined}
-                className="btn-primary"
-                style={{ opacity: userAnswers[quizIndex] === undefined ? 0.6 : 1, cursor: userAnswers[quizIndex] === undefined ? 'not-allowed' : 'pointer' }}
-              >
-                {quizIndex === 9 ? 'Finish Test & See Score' : 'Next Question'} <ChevronRight size={16} />
-              </button>
-            </div>
           </div>
-        ) : (
-          <div style={{ textAlign: 'center', padding: '24px 0' }}>
-            <div style={{ background: '#ecfdf5', border: '1px solid #a7f3d0', width: '64px', height: '64px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-              <Award size={32} color="#059669" />
+        </div>
+      ) : (
+        /* 10-Question Master Test Suite */
+        <div className="glass-panel" style={{ padding: '32px', background: '#ffffff' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', marginBottom: '20px', borderBottom: '1px solid #e2e8f0', paddingBottom: '16px' }}>
+            <div>
+              <h3 style={{ fontSize: '20px', fontWeight: '800', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <HelpCircle size={22} color="#7c3aed" /> {activeTab} Master Practice Exam (10 Questions)
+              </h3>
+              <p style={{ fontSize: '13px', color: '#64748b' }}>Test your comprehensive understanding across all {activeTab.toLowerCase()} reading materials.</p>
             </div>
-            <h3 style={{ fontSize: '24px', fontWeight: '800', color: '#0f172a', marginBottom: '8px' }}>
-              {activeTab} Practice Quiz Completed!
-            </h3>
-            <p style={{ fontSize: '18px', fontWeight: '700', color: '#2563eb', marginBottom: '24px' }}>
-              Your Final Score: {calculateTotalScore()} / 10 ({calculateTotalScore() * 10}%)
-            </p>
 
-            {/* Answer Breakdown Table */}
-            <div style={{ textAlign: 'left', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '20px', marginBottom: '28px' }}>
-              <h4 style={{ fontSize: '15px', fontWeight: '700', color: '#0f172a', marginBottom: '14px' }}>Question Results Summary:</h4>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {currentQuizList.map((q, idx) => {
-                  const isCorrect = userAnswers[idx] === q.correctIndex;
+            {!quizFinished && (
+              <span style={{ fontSize: '14px', fontWeight: '700', color: '#7c3aed', background: '#f3e8ff', padding: '6px 14px', borderRadius: '20px' }}>
+                Question {quizIndex + 1} of 10
+              </span>
+            )}
+          </div>
+
+          {!quizFinished ? (
+            <div>
+              <h4 style={{ fontSize: '16px', fontWeight: '700', color: '#0f172a', marginBottom: '18px', lineHeight: 1.4 }}>
+                Q{quizIndex + 1}. {currentQuestion.question}
+              </h4>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
+                {currentQuestion.options.map((optionText, optIdx) => {
+                  const isSelected = userAnswers[quizIndex] === optIdx;
                   return (
-                    <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', background: '#ffffff', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}>
-                      <span style={{ fontWeight: '600', color: '#334155' }}>
-                        Q{idx + 1}: {q.question.substring(0, 60)}...
+                    <button
+                      key={optIdx}
+                      onClick={() => handleOptionSelect(optIdx)}
+                      style={{
+                        textAlign: 'left',
+                        padding: '14px 18px',
+                        borderRadius: '10px',
+                        fontSize: '14px',
+                        fontWeight: '600',
+                        border: '1px solid',
+                        borderColor: isSelected ? '#7c3aed' : '#cbd5e1',
+                        background: isSelected ? '#f3e8ff' : '#ffffff',
+                        color: isSelected ? '#6b21a8' : '#334155',
+                        boxShadow: isSelected ? '0 2px 8px rgba(124, 58, 237, 0.15)' : 'none',
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      <span style={{ marginRight: '10px', fontWeight: '800', color: isSelected ? '#7c3aed' : '#94a3b8' }}>
+                        {String.fromCharCode(65 + optIdx)}.
                       </span>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '700', color: isCorrect ? '#059669' : '#dc2626' }}>
-                        {isCorrect ? <CheckCircle2 size={16} /> : <XCircle size={16} />}
-                        {isCorrect ? 'Correct' : 'Incorrect'}
-                      </span>
-                    </div>
+                      {optionText}
+                    </button>
                   );
                 })}
               </div>
-            </div>
 
-            <button onClick={handleResetQuiz} className="btn-primary" style={{ padding: '12px 28px' }}>
-              <RefreshCw size={16} /> Retake {activeTab} Quiz
-            </button>
-          </div>
-        )}
-      </div>
+              {userAnswers[quizIndex] !== undefined && (
+                <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '12px 16px', borderRadius: '8px', fontSize: '13px', color: '#475569', marginBottom: '24px' }}>
+                  💡 <strong>Explanation:</strong> {currentQuestion.explanation}
+                </div>
+              )}
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <button
+                  onClick={handlePrevQuestion}
+                  disabled={quizIndex === 0}
+                  className="btn-secondary"
+                  style={{ opacity: quizIndex === 0 ? 0.5 : 1, cursor: quizIndex === 0 ? 'not-allowed' : 'pointer' }}
+                >
+                  <ChevronLeft size={16} /> Previous
+                </button>
+
+                <button
+                  onClick={handleNextQuestion}
+                  disabled={userAnswers[quizIndex] === undefined}
+                  className="btn-primary"
+                  style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)', opacity: userAnswers[quizIndex] === undefined ? 0.6 : 1, cursor: userAnswers[quizIndex] === undefined ? 'not-allowed' : 'pointer' }}
+                >
+                  {quizIndex === 9 ? 'Finish Exam & See Score' : 'Next Question'} <ChevronRight size={16} />
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div style={{ textAlign: 'center', padding: '24px 0' }}>
+              <div style={{ background: '#ecfdf5', border: '1px solid #a7f3d0', width: '64px', height: '64px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+                <Award size={32} color="#059669" />
+              </div>
+              <h3 style={{ fontSize: '24px', fontWeight: '800', color: '#0f172a', marginBottom: '8px' }}>
+                {activeTab} Master Practice Exam Completed!
+              </h3>
+              <p style={{ fontSize: '18px', fontWeight: '700', color: '#7c3aed', marginBottom: '24px' }}>
+                Your Final Score: {calculateTotalScore()} / 10 ({calculateTotalScore() * 10}%)
+              </p>
+
+              {/* Answer Breakdown Table */}
+              <div style={{ textAlign: 'left', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '20px', marginBottom: '28px' }}>
+                <h4 style={{ fontSize: '15px', fontWeight: '700', color: '#0f172a', marginBottom: '14px' }}>Question Results Summary:</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {currentMasterQuizList.map((q, idx) => {
+                    const isCorrect = userAnswers[idx] === q.correctIndex;
+                    return (
+                      <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', background: '#ffffff', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}>
+                        <span style={{ fontWeight: '600', color: '#334155' }}>
+                          Q{idx + 1}: {q.question.substring(0, 60)}...
+                        </span>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '700', color: isCorrect ? '#059669' : '#dc2626' }}>
+                          {isCorrect ? <CheckCircle2 size={16} /> : <XCircle size={16} />}
+                          {isCorrect ? 'Correct' : 'Incorrect'}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <button onClick={handleResetQuiz} className="btn-primary" style={{ padding: '12px 28px', background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' }}>
+                <RefreshCw size={16} /> Retake {activeTab} Master Exam
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
