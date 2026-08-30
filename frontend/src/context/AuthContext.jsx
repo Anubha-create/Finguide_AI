@@ -3,6 +3,12 @@ import axios from 'axios';
 
 export const AuthContext = createContext();
 
+// Configure dynamic API Base URL
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
+if (API_BASE) {
+  axios.defaults.baseURL = API_BASE;
+}
+
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('token') || '');
   const [user, setUser] = useState(JSON.parse(localStorage.getItem('user') || 'null'));
@@ -25,7 +31,7 @@ export const AuthProvider = ({ children }) => {
       const res = await axios.get('/api/user/profile');
       setProfile(res.data);
     } catch (err) {
-      console.error('Failed to fetch profile:', err);
+      console.warn('Failed to fetch profile:', err);
     } finally {
       setLoading(false);
     }
