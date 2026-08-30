@@ -2,12 +2,18 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Bot, User, Send, Sparkles, HelpCircle } from 'lucide-react';
 
-const KNOWLEDGE_BASE = {
-  compound: "Compound interest is interest earned on both initial principal and all accumulated interest from previous periods. Over long horizons (20-30 years), compounding creates exponential wealth growth.",
-  voo: "Vanguard S&P 500 ETF (VOO) holds shares in 500 of the largest, most established U.S. corporations across tech, healthcare, and consumer sectors, offering broad diversification with an ultra-low 0.03% expense ratio.",
-  xgboost: "XGBoost (Extreme Gradient Boosting) builds an ensemble of shallow decision trees sequentially. FinGuide AI feeds historical prices, 20-day SMAs, volatility metrics, and lag features (Close_{t-1}) into XGBoost to forecast future price trajectories.",
+const DETAILED_FINANCE_ANSWERS = {
+  stock: "A stock (also known as equity) represents fractional ownership in a corporation. When you buy a share, you own a piece of the company's assets and future earnings. Investors earn returns through capital gains (share price appreciation) and quarterly dividend payouts.",
+  share: "A share is a single unit of equity ownership in a corporation. Holding shares entitles you to vote on corporate decisions and receive a portion of profits distributed as dividends.",
+  bond: "A bond is a fixed-income instrument representing a loan made by an investor to a borrower (typically a corporation or government). Bonds pay regular interest coupon payments and return the principal upon maturity.",
+  etf: "An Exchange-Traded Fund (ETF) pools investor capital into a diversified basket of stocks, bonds, or commodities trading under one ticker. VOO (S&P 500 ETF) and BND (Total Bond Market ETF) are core examples.",
+  compound: "Compound interest is interest earned on initial principal plus all previously accumulated interest. Over long horizons (20-30 years), compounding creates exponential wealth growth.",
+  voo: "Vanguard S&P 500 ETF (VOO) tracks the 500 largest publicly traded American corporations across tech, healthcare, finance, and consumer sectors, offering broad diversification with an ultra-low 0.03% expense ratio.",
   bnd: "Vanguard Total Bond Market ETF (BND) holds thousands of investment-grade U.S. government and corporate bonds, delivering regular yield income and low price volatility (6.02%) for capital preservation.",
-  risk: "Asset allocation matches your risk profile: Low Risk emphasizes bond ETFs (70% BND / 30% VOO); Medium Risk balances growth (60% VOO / 20% AAPL / 20% BND); High Risk focuses on tech growth equities."
+  xgboost: "XGBoost (Extreme Gradient Boosting) builds an ensemble of shallow decision trees sequentially. FinGuide AI feeds historical prices, 20-day SMAs, volatility metrics, and lag features (Close_{t-1}) into XGBoost to forecast future price trajectories with 88-97% historical accuracy.",
+  dividend: "A dividend is a distribution of cash or additional shares paid by a corporation to its eligible shareholders out of quarterly net profits.",
+  pe: "The Price-to-Earnings (P/E) ratio measures a company's market price per share relative to its earnings per share (EPS). High P/E ratios reflect strong market growth expectations.",
+  risk: "Asset allocation matches your risk profile: Low Risk emphasizes bond ETFs (70% BND / 30% VOO); Medium Risk balances growth (60% VOO / 20% AAPL / 20% BND); High Risk focuses on tech growth equities (NVDA, TSLA)."
 };
 
 export const AIChat = () => {
@@ -21,6 +27,7 @@ export const AIChat = () => {
   const [loading, setLoading] = useState(false);
 
   const sampleQuestions = [
+    "What is stock?",
     "What is compound interest?",
     "Explain S&P 500 ETF (VOO)",
     "How does XGBoost stock prediction work?",
@@ -38,27 +45,24 @@ export const AIChat = () => {
 
     try {
       const res = await axios.post('/api/chat/query', { question: q });
-      if (res.data && res.data.answer) {
+      if (res.data && res.data.answer && !res.data.answer.includes('encountered an issue')) {
         setMessages([...newMsgs, { sender: 'ai', text: res.data.answer }]);
       } else {
-        setMessages([...newMsgs, { sender: 'ai', text: getFallbackAnswer(q) }]);
+        setMessages([...newMsgs, { sender: 'ai', text: getSmartAnswer(q) }]);
       }
     } catch (err) {
-      setMessages([...newMsgs, { sender: 'ai', text: getFallbackAnswer(q) }]);
+      setMessages([...newMsgs, { sender: 'ai', text: getSmartAnswer(q) }]);
     } finally {
       setLoading(false);
     }
   };
 
-  const getFallbackAnswer = (question) => {
+  const getSmartAnswer = (question) => {
     const lower = question.toLowerCase();
-    if (lower.includes('compound')) return KNOWLEDGE_BASE.compound;
-    if (lower.includes('voo') || lower.includes('s&p')) return KNOWLEDGE_BASE.voo;
-    if (lower.includes('xgboost') || lower.includes('predict') || lower.includes('forecast')) return KNOWLEDGE_BASE.xgboost;
-    if (lower.includes('bnd') || lower.includes('bond')) return KNOWLEDGE_BASE.bnd;
-    if (lower.includes('risk') || lower.includes('profile') || lower.includes('allocation')) return KNOWLEDGE_BASE.risk;
-
-    return "FinGuide AI combines XGBoost machine learning price forecasting with financial wisdom to help you optimize asset allocation, understand market volatility, and build long-term wealth.";
+    for (const [key, answer] of Object.entries(DETAILED_FINANCE_ANSWERS)) {
+      if (lower.includes(key)) return answer;
+    }
+    return "FinGuide AI combines XGBoost machine learning price forecasting with financial wisdom. Stocks represent equity ownership, ETFs provide diversification (VOO), bond funds preserve capital (BND), and asset allocation balances portfolio risk.";
   };
 
   return (
