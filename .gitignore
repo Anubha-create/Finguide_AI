@@ -1,32 +1,45 @@
-# Python cache
-__pycache__/
-*.pyc
-*.pyo
+# Node & Frontend
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+build/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# Virtual Environment
+# Python & Backend
+__pycache__/
+*.py[cod]
+*$py.class
 backend/venv/
 venv/
+ENV/
+env/
 
 # Environment Variables
-backend/.env
 .env
+.env.local
+.env.*.local
+backend/.env
 
-# Database
+# Database & SQLite
 backend/instance/
 *.db
+*.sqlite3
 
-# VS Code
+# IDE / OS
 .vscode/
+.idea/
+.DS_Store
+Thumbs.db
 
-# Temporary files
+# Temporary & Test Scratch files
 scratch/
+backend/scratch/
 run_commands.txt
 trend_accuracy.txt
-
-# Test files
-backend/scratch/
 backend/test.py
 backend/test2.py
 backend/test_endpoints.py
-
-
