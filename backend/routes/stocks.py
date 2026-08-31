@@ -41,6 +41,7 @@ def recommendations():
     return jsonify(recs), 200
 
 @stocks_bp.route('/<ticker>/history', methods=['GET'])
+@stocks_bp.route('/history/<ticker>', methods=['GET'])
 def stock_history(ticker):
     tf = request.args.get('timeframe', '1M')
     history = generate_historical_prices(ticker, timeframe=tf)
@@ -51,7 +52,25 @@ def stock_history(ticker):
     }), 200
 
 @stocks_bp.route('/<ticker>/predict', methods=['GET'])
+@stocks_bp.route('/prediction/<ticker>', methods=['GET'])
 def stock_predict(ticker):
     tf = request.args.get('timeframe', '1M')
     result = predict_stock_trend(ticker, timeframe=tf)
-    return jsonify(result), 200
+    
+    # Flatten keys for frontend compatibility
+    insight = result.get('insight', {})
+    response_data = {
+        'ticker': result.get('ticker'),
+        'name': result.get('name'),
+        'timeframe': result.get('timeframe'),
+        'current_price': result.get('current_price'),
+        'model_accuracy': insight.get('model_accuracy'),
+        'volatility': insight.get('annualized_volatility'),
+        'predicted_trend': insight.get('trend'),
+        'predicted_slope': insight.get('predicted_slope'),
+        'risk_level': insight.get('risk_level'),
+        'insight': insight,
+        'forecast': result.get('forecast'),
+        'history_sample': result.get('history_sample')
+    }
+    return jsonify(response_data), 200

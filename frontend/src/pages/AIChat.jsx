@@ -44,13 +44,15 @@ export const AIChat = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post('/api/chat/query', { question: q });
-      if (res.data && res.data.answer && !res.data.answer.includes('encountered an issue')) {
-        setMessages([...newMsgs, { sender: 'ai', text: res.data.answer }]);
+      const res = await axios.post('/api/chat', { message: q, question: q });
+      const aiReply = res.data?.reply || res.data?.answer;
+      if (aiReply) {
+        setMessages([...newMsgs, { sender: 'ai', text: aiReply }]);
       } else {
         setMessages([...newMsgs, { sender: 'ai', text: getSmartAnswer(q) }]);
       }
     } catch (err) {
+      console.error("Chat request error:", err);
       setMessages([...newMsgs, { sender: 'ai', text: getSmartAnswer(q) }]);
     } finally {
       setLoading(false);

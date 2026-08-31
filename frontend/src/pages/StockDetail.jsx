@@ -80,42 +80,48 @@ export const StockDetail = () => {
     try {
       setLoading(true);
       const [hRes, pRes] = await Promise.all([
-        axios.get(`/api/stocks/history/${ticker}?timeframe=${timeframe}`).catch(() => null),
-        axios.get(`/api/stocks/prediction/${ticker}`).catch(() => null)
+        axios.get(`/api/stocks/${ticker}/history?timeframe=${timeframe}`).catch(() => null),
+        axios.get(`/api/stocks/${ticker}/predict?timeframe=${timeframe}`).catch(() => null)
       ]);
 
-      if (hRes && hRes.data && hRes.data.history) {
-        const hist = hRes.data.history.map(item => ({
-          date: item.Date,
-          historical: parseFloat(item.Close.toFixed(2)),
-          forecast: null
-        }));
+      if (hRes && hRes.data && hRes.data.history && hRes.data.history.length > 0) {
+        const hist = hRes.data.history.map(item => {
+          const dVal = item.date || item.Date || '';
+          const cVal = item.close !== undefined ? item.close : item.Close;
+          return {
+            date: dVal,
+            historical: typeof cVal === 'number' ? parseFloat(cVal.toFixed(2)) : parseFloat(cVal),
+            forecast: null
+          };
+        });
 
-        if (pRes && pRes.data && pRes.data.forecast) {
+        if (pRes && pRes.data && pRes.data.forecast && pRes.data.forecast.length > 0) {
           const lastHist = hist[hist.length - 1];
           if (lastHist) lastHist.forecast = lastHist.historical;
 
           pRes.data.forecast.forEach(item => {
+            const dVal = item.date || item.Date || '';
+            const predVal = item.predicted_close !== undefined ? item.predicted_close : item.Predicted_Close;
             hist.push({
-              date: item.Date,
+              date: dVal,
               historical: null,
-              forecast: parseFloat(item.Predicted_Close.toFixed(2))
+              forecast: typeof predVal === 'number' ? parseFloat(predVal.toFixed(2)) : parseFloat(predVal)
             });
           });
 
           setMetrics({
-            accuracy: pRes.data.model_accuracy || fallbackInfo.accuracy,
-            volatility: pRes.data.volatility || fallbackInfo.volatility,
-            trend: pRes.data.predicted_trend || fallbackInfo.trend,
-            current_price: pRes.data.current_price || fallbackInfo.price
+            accuracy: pRes.data.model_accuracy ?? pRes.data.insight?.model_accuracy ?? fallbackInfo.accuracy,
+            volatility: pRes.data.volatility ?? pRes.data.insight?.annualized_volatility ?? fallbackInfo.volatility,
+            trend: pRes.data.predicted_trend ?? pRes.data.insight?.trend ?? fallbackInfo.trend,
+            current_price: pRes.data.current_price ?? fallbackInfo.price
           });
         }
         setData(hist);
       } else {
-        // Use realistic self-contained generator
         setData(generateLocalChartData(timeframe, fallbackInfo.baseHistory));
       }
     } catch (err) {
+      console.error("Stock fetch error:", err);
       setData(generateLocalChartData(timeframe, fallbackInfo.baseHistory));
     } finally {
       setLoading(false);

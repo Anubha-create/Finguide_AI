@@ -116,8 +116,8 @@ export const Dashboard = () => {
                       ${typeof item.price === 'number' ? item.price.toFixed(2) : item.price}
                     </div>
                     <div style={{ fontSize: '13px', fontWeight: '700', color: isPositive ? '#059669' : '#dc2626' }}>
-                      {isPositive ? '↗ +' : '↘ '}
-                      {item.change_percent}% (${item.change})
+                      {isPositive ? '↗ ' : '↘ '}
+                      {String(item.change_percent).includes('%') ? item.change_percent : `${item.change_percent}%`} (${item.change})
                     </div>
                   </div>
 
@@ -139,7 +139,19 @@ export const Dashboard = () => {
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           {news.map((n, idx) => (
-            <div key={idx} className="glass-panel" style={{ padding: '18px 24px', background: '#ffffff', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+            <a
+              key={idx}
+              href={n.url || 'https://finance.yahoo.com'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="glass-panel"
+              style={{
+                padding: '18px 24px', background: '#ffffff', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px',
+                textDecoration: 'none', transition: 'transform 0.2s ease, box-shadow 0.2s ease', cursor: 'pointer'
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(37,99,235,0.12)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}
+            >
               <div style={{ flex: 1, minWidth: '280px' }}>
                 <span style={{ fontSize: '11px', fontWeight: '700', color: '#2563eb', background: '#dbeafe', padding: '3px 10px', borderRadius: '12px', marginRight: '10px' }}>
                   {n.category || 'Market News'}
@@ -148,10 +160,10 @@ export const Dashboard = () => {
                   {n.title}
                 </h4>
               </div>
-              <div style={{ fontSize: '12px', color: '#64748b', fontWeight: '600' }}>
-                {n.source} • {n.time}
+              <div style={{ fontSize: '12px', color: '#64748b', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                {n.source} • {n.time} <ArrowRight size={14} color="#2563eb" />
               </div>
-            </div>
+            </a>
           ))}
         </div>
       </div>
