@@ -7,6 +7,10 @@ services:
     buildCommand: pip install -r backend/requirements.txt
     startCommand: cd backend && gunicorn "app:create_app()"
     envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: NEWSDATA_API_KEY
+        sync: false
       - key: SECRET_KEY
         generateValue: true
       - key: JWT_SECRET_KEY
