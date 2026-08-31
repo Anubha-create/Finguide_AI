@@ -4,12 +4,12 @@ import { TrendingUp, ShieldAlert, Sparkles, Newspaper, ArrowRight, Activity, Lin
 import { Link } from 'react-router-dom';
 
 const DEFAULT_MARKET_DATA = [
-  { symbol: 'VOO', name: 'Vanguard S&P 500 ETF', price: 482.45, change: 1.25, change_percent: 0.26, risk: 'Low Risk', category: 'Index ETF' },
-  { symbol: 'BND', name: 'Vanguard Total Bond Market', price: 72.80, change: -0.12, change_percent: -0.16, risk: 'Low Risk', category: 'Bond ETF' },
-  { symbol: 'AAPL', name: 'Apple Inc.', price: 224.30, change: 3.40, change_percent: 1.54, risk: 'Medium Risk', category: 'Tech Equity' },
-  { symbol: 'MSFT', name: 'Microsoft Corp.', price: 446.75, change: -5.10, change_percent: -1.13, risk: 'Medium Risk', category: 'Tech Equity' },
-  { symbol: 'NVDA', name: 'NVIDIA Corp.', price: 126.50, change: 2.15, change_percent: 1.73, risk: 'High Risk', category: 'Semiconductors' },
-  { symbol: 'TSLA', name: 'Tesla Inc.', price: 212.10, change: 4.80, change_percent: 2.32, risk: 'High Risk', category: 'Clean Energy' }
+  { symbol: 'VOO', ticker: 'VOO', name: 'Vanguard S&P 500 ETF', price: 707.24, change: -0.39, change_percent: '-0.06%', risk: 'Low Risk', category: 'Index ETF' },
+  { symbol: 'BND', ticker: 'BND', name: 'Vanguard Total Bond Market', price: 72.31, change: -0.33, change_percent: '-0.45%', risk: 'Low Risk', category: 'Bond ETF' },
+  { symbol: 'AAPL', ticker: 'AAPL', name: 'Apple Inc.', price: 319.70, change: 4.76, change_percent: '+1.51%', risk: 'Medium Risk', category: 'Tech Equity' },
+  { symbol: 'MSFT', ticker: 'MSFT', name: 'Microsoft Corp.', price: 513.53, change: 10.44, change_percent: '+2.08%', risk: 'Medium Risk', category: 'Tech Equity' },
+  { symbol: 'NVDA', ticker: 'NVDA', name: 'NVIDIA Corp.', price: 217.55, change: -8.60, change_percent: '-3.80%', risk: 'High Risk', category: 'Semiconductors' },
+  { symbol: 'TSLA', ticker: 'TSLA', name: 'Tesla Inc.', price: 348.75, change: -5.90, change_percent: '-1.66%', risk: 'High Risk', category: 'Clean Energy' }
 ];
 
 const DEFAULT_NEWS = [

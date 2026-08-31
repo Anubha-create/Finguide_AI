@@ -9,36 +9,37 @@ dashboard_bp = Blueprint('dashboard', __name__)
 @dashboard_bp.route('/market-data', methods=['GET'])
 def market_data():
     default_assets = [
-        {'ticker': 'VOO', 'symbol': 'VOO', 'name': 'Vanguard S&P 500 ETF', 'price': 508.20, 'change': 3.30, 'change_percent': '0.65%', 'volume': '4.2M', 'risk': 'Low Risk'},
-        {'ticker': 'BND', 'symbol': 'BND', 'name': 'Vanguard Total Bond Market', 'price': 72.54, 'change': -0.04, 'change_percent': '-0.06%', 'volume': '2.1M', 'risk': 'Low Risk'},
-        {'ticker': 'AAPL', 'symbol': 'AAPL', 'name': 'Apple Inc.', 'price': 319.70, 'change': 5.12, 'change_percent': '1.63%', 'volume': '38.6M', 'risk': 'Medium Risk'},
-        {'ticker': 'MSFT', 'symbol': 'MSFT', 'name': 'Microsoft Corp.', 'price': 513.53, 'change': 8.47, 'change_percent': '1.68%', 'volume': '18.4M', 'risk': 'Medium Risk'},
-        {'ticker': 'NVDA', 'symbol': 'NVDA', 'name': 'NVIDIA Corp.', 'price': 227.98, 'change': 18.32, 'change_percent': '8.74%', 'volume': '52.8M', 'risk': 'High Risk'},
-        {'ticker': 'TSLA', 'symbol': 'TSLA', 'name': 'Tesla Inc.', 'price': 354.81, 'change': 8.99, 'change_percent': '2.60%', 'volume': '41.3M', 'risk': 'High Risk'}
+        {'ticker': 'VOO', 'symbol': 'VOO', 'name': 'Vanguard S&P 500 ETF', 'price': 707.24, 'change': -0.39, 'change_percent': '-0.06%', 'volume': '4.2M', 'risk': 'Low Risk'},
+        {'ticker': 'BND', 'symbol': 'BND', 'name': 'Vanguard Total Bond Market', 'price': 72.31, 'change': -0.33, 'change_percent': '-0.45%', 'volume': '2.1M', 'risk': 'Low Risk'},
+        {'ticker': 'AAPL', 'symbol': 'AAPL', 'name': 'Apple Inc.', 'price': 319.70, 'change': 4.76, 'change_percent': '+1.51%', 'volume': '38.6M', 'risk': 'Medium Risk'},
+        {'ticker': 'MSFT', 'symbol': 'MSFT', 'name': 'Microsoft Corp.', 'price': 513.53, 'change': 10.44, 'change_percent': '+2.08%', 'volume': '18.4M', 'risk': 'Medium Risk'},
+        {'ticker': 'NVDA', 'symbol': 'NVDA', 'name': 'NVIDIA Corp.', 'price': 217.55, 'change': -8.60, 'change_percent': '-3.80%', 'volume': '52.8M', 'risk': 'High Risk'},
+        {'ticker': 'TSLA', 'symbol': 'TSLA', 'name': 'Tesla Inc.', 'price': 348.75, 'change': -5.90, 'change_percent': '-1.66%', 'volume': '41.3M', 'risk': 'High Risk'}
     ]
     
     try:
         import yfinance as yf
-        updated_data = []
-        for asset in default_assets:
-            s = asset['symbol']
-            try:
-                t = yf.Ticker(s)
-                fast = t.fast_info
-                curr_p = float(fast.last_price)
-                prev_p = float(fast.previous_close)
-                if curr_p and prev_p:
-                    chg = curr_p - prev_p
-                    chg_pct = (chg / prev_p) * 100.0
-                    asset['price'] = round(curr_p, 2)
-                    asset['change'] = round(chg, 2)
-                    asset['change_percent'] = f"{'+' if chg >= 0 else ''}{chg_pct:.2f}%"
-            except Exception as te:
-                print(f"yfinance fast_info error for {s}: {te}")
-            updated_data.append(asset)
-        return jsonify(updated_data), 200
+        tickers_list = ["VOO", "BND", "AAPL", "MSFT", "NVDA", "TSLA"]
+        df = yf.download(" ".join(tickers_list), period='5d', interval='1d', progress=False)['Close']
+        
+        if not df.empty and len(df) >= 2:
+            updated_data = []
+            for asset in default_assets:
+                s = asset['symbol']
+                if s in df.columns:
+                    series = df[s].dropna()
+                    if len(series) >= 2:
+                        curr_p = float(series.iloc[-1])
+                        prev_p = float(series.iloc[-2])
+                        chg = curr_p - prev_p
+                        chg_pct = (chg / prev_p) * 100.0
+                        asset['price'] = round(curr_p, 2)
+                        asset['change'] = round(chg, 2)
+                        asset['change_percent'] = f"{'+' if chg >= 0 else ''}{chg_pct:.2f}%"
+                updated_data.append(asset)
+            return jsonify(updated_data), 200
     except Exception as e:
-        print(f"yfinance fetch error for market-data: {e}")
+        print(f"yfinance bulk download error for market-data: {e}")
 
     return jsonify(default_assets), 200
 
@@ -50,7 +51,7 @@ def news():
     if news_key:
         try:
             api_url = f"https://newsdata.io/api/1/news?apikey={news_key}&q=stocks%20OR%20market%20OR%20finance%20OR%20economy&language=en&category=business,technology"
-            res = requests.get(api_url, timeout=8).json()
+            res = requests.get(api_url, timeout=5).json()
             if res.get('status') == 'success' and res.get('results'):
                 articles = []
                 for idx, r in enumerate(res['results'][:8]):
@@ -81,7 +82,6 @@ def news():
         except Exception as ne:
             print(f"NewsData.io API query error: {ne}")
 
-    # Fallback default news with valid news URLs
     fallback_articles = [
         {
             'id': 1,
